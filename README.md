@@ -1,7 +1,7 @@
-# blue_simulator
+# Blue Mobile Robot Simulator Based on Webots
 
 <p float="left">
-    <img src="Blue.gif" width="500"  />
+    <img src="Blue.gif" width="600"  />
  </p>
 
 ## Dependencies

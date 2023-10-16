@@ -1,4 +1,4 @@
-# Blue Mobile Robot Simulator Based on Webots
+# Blue Mobile Robot Based on Webots
 
 <p float="left">
     <img src="Blue.gif" width="600"  />

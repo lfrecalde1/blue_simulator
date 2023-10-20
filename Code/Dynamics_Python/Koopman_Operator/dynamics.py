@@ -50,7 +50,7 @@ def get_odometry(data, angle, vx, vy, vz, wx, wy, wz, vel_control, steer_control
     # Get Velocities of the system
     hp = np.array([vx[0, :], vy[0, :], vz[0, :], wx[0, :], wy[0, :], wz[0, :]], dtype = np.double)
     T = np.array([vel_control[0,:], steer_control[0, :]], dtype = np.double)
-    return h, hp, T
+    return h[:, 0:201], hp[:, 0:201], T[:, 0:200]
 
 
 # In[3]:
@@ -148,6 +148,11 @@ def cost_function_koopman(X_1, X_k, U, alpha, beta, n, m, n_normal):
     
     U_ca = ca.MX.zeros(i_control, j_control)
     U_ca = create_matrix(U_ca, U)
+
+    ## Initial cost
+    obj = 0
+
+    args = {}
     
     for k in range(0, U_ca.shape[1]):
         x_1 = C_a@X_1_ca[:, k]
@@ -159,18 +164,22 @@ def cost_function_koopman(X_1, X_k, U, alpha, beta, n, m, n_normal):
         
         error_koop = Gamma_k - A@Gamma_1 - B@U_ca[:, k]
         error_prediction = x_k - C_a@(A@Gamma_1 + B@U_ca[:, k])
+        obj = obj + ca.norm_2(error_koop) + ca.norm_2(error_prediction)
     
-        ## Error vector
-        he_koop = ca.vertcat(he_koop, error_koop)
-        he_prediction = ca.vertcat(he_prediction, error_prediction)
 
-    obj = beta*(he_koop.T@he_koop) + 1*(he_prediction.T@he_prediction)
     OPT_variables = ca.vertcat(A.reshape((-1, 1)), B.reshape((-1, 1)))
     
+    A_0 = ca.MX.eye(n)*0.1
+    B_0 = ca.MX.ones(n, m)*0.1
+
     nlp_prob = {'f': obj,'x': OPT_variables}
     opts = {'ipopt': {'max_iter': 100, 'print_level': 0, 'acceptable_tol': 1e-8, 'acceptable_obj_change_tol': 1e-6},'print_time': 1}
+    args['x0'] = ca.vertcat(A_0.reshape((-1, 1)), B_0.reshape((-1, 1)))
     solver = ca.nlpsol('solver', 'ipopt', nlp_prob)
-    return None
+    sol = solver(x0=args['x0'])
+    Solution = sol['x']
+    Full_matrix = ca.reshape(Solution, n, n + m)
+    return Full_matrix
 
 
 # In[7]:
@@ -317,8 +326,11 @@ beta = 0.2
 # In[ ]:
 
 
-cost_function_koopman(X1, X2, U, alpha, beta, n, m, n_normal)
+full_matrix = cost_function_koopman(X1, X2, U, alpha, beta, n, m, n_normal)
+print(full_matrix[0,0])
 
+plt.imshow(full_matrix_np)
+plt.colorbar()
 
 # In[ ]:
 

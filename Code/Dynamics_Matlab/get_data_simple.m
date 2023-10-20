@@ -6,9 +6,9 @@ des =1;
 
 %% Load Data System Pose
 h = h(:, des:end);
+
 %% Load Data Velocities
 hp = hp(:, des:end);
-
 
 %% Angular Values
 p = hp(4, :);

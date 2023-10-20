@@ -244,41 +244,41 @@ h.shape
 # In[11]:
 
 
-fig13, ax13, ax23, ax33 = fancy_plots_3()
-plot_states_angles(fig13, ax13, ax23, ax33, h[7:10, :], t, "Euler Angles Of the system")
-plt.show()
-
-
-# In[12]:
-
-
-fig14, ax14, ax24, ax34 = fancy_plots_3()
-plot_states_position(fig14, ax14, ax24, ax34, h[0:3, :], t, "Position of the system")
-plt.show()
-
-
-# In[13]:
-
-
-fig15, ax15, ax25, ax35 = fancy_plots_3()
-plot_states_velocity_lineal(fig15, ax15, ax25, ax35, hp[0:3, :], t, "Lineal Velocity of the system")
-plt.show()
-
-
-# In[14]:
-
-
-fig16, ax16, ax26, ax36 = fancy_plots_3()
-plot_states_velocity_angular(fig16, ax16, ax26, ax36, hp[3:6, :], t, "Angular Velocity of the system")
-plt.show()
-
-
-# In[15]:
-
-
-fig17, ax17, ax27 = fancy_plots_2()
-plot_control_states(fig17, ax17, ax27, h[10:11, :], hp[0:1, :], T[:, :], t, "Control and Real Values of the system")
-plt.show()
+#fig13, ax13, ax23, ax33 = fancy_plots_3()
+#plot_states_angles(fig13, ax13, ax23, ax33, h[7:10, :], t, "Euler Angles Of the system")
+#plt.show()
+#
+#
+## In[12]:
+#
+#
+#fig14, ax14, ax24, ax34 = fancy_plots_3()
+#plot_states_position(fig14, ax14, ax24, ax34, h[0:3, :], t, "Position of the system")
+#plt.show()
+#
+#
+## In[13]:
+#
+#
+#fig15, ax15, ax25, ax35 = fancy_plots_3()
+#plot_states_velocity_lineal(fig15, ax15, ax25, ax35, hp[0:3, :], t, "Lineal Velocity of the system")
+#plt.show()
+#
+#
+## In[14]:
+#
+#
+#fig16, ax16, ax26, ax36 = fancy_plots_3()
+#plot_states_velocity_angular(fig16, ax16, ax26, ax36, hp[3:6, :], t, "Angular Velocity of the system")
+#plt.show()
+#
+#
+## In[15]:
+#
+#
+#fig17, ax17, ax27 = fancy_plots_2()
+#plot_control_states(fig17, ax17, ax27, h[10:11, :], hp[0:1, :], T[:, :], t, "Control and Real Values of the system")
+#plt.show()
 
 
 # ### Matrices of the System DMD Mode

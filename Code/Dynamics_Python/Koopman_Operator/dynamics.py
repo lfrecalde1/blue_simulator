@@ -217,7 +217,7 @@ wz = wz.T
 vel_control = Data['vel_control']
 vel_control = vel_control.T
 
-h, hp, T = get_odometry(data_odom_blue, steering_real, vx, vy, vz, wx, wy, wz, vel_control, steering_control, 1000)
+h, hp, T = get_odometry(data_odom_blue, steering_real, vx, vy, vz, wx, wy, wz, vel_control, steering_control, 2000)
 
 ## Compute sample time of the system
 ts = 0.05
@@ -303,3 +303,4 @@ plt.show()
 
 fig18, ax18 = fancy_plots_1()
 plot_error_estimation(fig18, ax18, norm_error, t, 'Error Norm of the Estimation')
+plt.show()

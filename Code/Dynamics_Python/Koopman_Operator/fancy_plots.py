@@ -711,6 +711,7 @@ def plot_error_estimation(fig11, ax11, x_e, t, name):
             borderpad=0.5, labelspacing=0.5, handlelength=3, handletextpad=0.1,
             borderaxespad=0.3, columnspacing=2)
     ax11.grid(color='#949494', linestyle='-.', linewidth=0.5)
+    ax11.set_xlabel(r"$\textrm{Time}[s]$", labelpad=5)
 
     fig11.savefig(name + ".pdf")
     fig11.savefig(name + ".png")

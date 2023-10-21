@@ -303,6 +303,12 @@ for k in range(0, U.shape[1]):
 
 print("Error estimation norm")
 print(np.linalg.norm(norm_error))
+eig_A, eigv_A = np.linalg.eig(A_a)
+eig_B, eigv_B = np.linalg.eig(B_a)
+print("Print Eigvalues A")
+print(eig_A)
+print("Print Eigvalues B")
+print(eig_B)
 
 fig13, ax13, ax23, ax33 = fancy_plots_3()
 plot_states_angles_estimation(fig13, ax13, ax23, ax33, h[7:10, :], output_estimate[:, :], t, "Euler Angles Of the system")

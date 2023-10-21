@@ -71,6 +71,7 @@ def get_simple_data(h, hp, T):
     
     ## General states data
     X = np.array([euler[2,:], omega[2, :], alpha, vx, vy], dtype = np.double)
+    #X = np.array([euler[0, :], euler[1, :], euler[2, :], omega[0, :], omega[1, :], omega[2, :], alpha, vx, vy], dtype = np.double)
     ## Control Action
     U_ref = T[:, :]
     
@@ -96,14 +97,6 @@ def liftFun(x):
     x_lift.append(np.cos(x[2, :])*x[4, :])
     x_lift.append(np.sin(x[2, :])*x[4, :])
 
-    x_lift.append(np.sin(x[2, :])*(x[2, :]-(x[1, :] + x[4, :])))
-    x_lift.append(np.cos(x[2, :])*(x[2, :]-(x[1, :] + x[4, :])))
-    x_lift.append((x[1, :] - x[4, :]))
-
-    x_lift.append(np.sin(x[2, :])*(x[2, :]-(x[1, :] + x[3, :])))
-    x_lift.append(np.cos(x[2, :])*(x[2, :]-(x[1, :] + x[3, :])))
-    x_lift.append((x[1, :] - x[3, :]))
-
     x_lift.append((x[1, :]*x[3, :]))
     x_lift.append((x[1, :]*x[4, :]))
     
@@ -124,14 +117,6 @@ def liftFun_vector(x):
     x_lift.append(np.sin(x[2])*x[3])
     x_lift.append(np.cos(x[2])*x[4])
     x_lift.append(np.sin(x[2])*x[4])
-
-    x_lift.append(np.sin(x[2])*(x[2]-(x[1] + x[4])))
-    x_lift.append(np.cos(x[2])*(x[2]-(x[1] + x[4])))
-    x_lift.append((x[1] - x[4]))
-
-    x_lift.append(np.sin(x[2])*(x[2]-(x[1] + x[3])))
-    x_lift.append(np.cos(x[2])*(x[2]-(x[1] + x[3])))
-    x_lift.append((x[1] - x[3]))
 
     x_lift.append((x[1]*x[3]))
     x_lift.append((x[1]*x[4]))
@@ -214,7 +199,7 @@ def cost_function_koopman(X_1, X_k, U, alpha, beta, n, m, n_normal):
 
 
 ## Load Matrices from mat file
-Data = scipy.io.loadmat('blue_data_01.mat')
+Data = scipy.io.loadmat('blue_data_02.mat')
 
 ## Get odometry of the system
 data_odom_blue = Data['data_odom_blue']
@@ -249,7 +234,7 @@ wz = wz.T
 vel_control = Data['vel_control']
 vel_control = vel_control.T
 
-h, hp, T = get_odometry(data_odom_blue, steering_real, vx, vy, vz, wx, wy, wz, vel_control, steering_control, 2000)
+h, hp, T = get_odometry(data_odom_blue, steering_real, vx, vy, vz, wx, wy, wz, vel_control, steering_control, 500)
 ## Compute sample time of the system
 ts = 0.05
 t = np.zeros((T.shape[1]), dtype = np.double)

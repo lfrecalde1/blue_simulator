@@ -8,7 +8,7 @@ from scipy.spatial.transform import Rotation as R
 from fancy_plots import fancy_plots_3
 from fancy_plots import plot_states_angles_estimation, plot_states_velocity_lineal_estimation, plot_states_velocity_angular_estimation, plot_control_states_estimation
 from fancy_plots import fancy_plots_2
-from fancy_plots import fancy_plots_1, plot_error_estimation
+from fancy_plots import fancy_plots_1, plot_error_estimation, plot_states_position_estimation
 
 def get_odometry(data, angle, vx, vy, vz, wx, wy, wz, vel_control, steer_control, samples):
     # Get size of the data
@@ -47,6 +47,9 @@ def get_odometry(data, angle, vx, vy, vz, wx, wy, wz, vel_control, steer_control
     return h[:, 0:samples+1], hp[:, 0:samples+1], T[:, 0:samples]
 
 def get_simple_data(h, hp, T):
+    ## Position
+    x = h[0, :]
+    y = h[1, :]
     ## Linear velocities
     vx = hp[0, :]
     vy = hp[1, :]
@@ -71,7 +74,7 @@ def get_simple_data(h, hp, T):
     
     ## General states data
     #X = np.array([euler[2,:], omega[2, :], alpha, vx, vy], dtype = np.double)
-    X = np.array([euler[0, :], euler[1, :], euler[2, :], omega[0, :], omega[1, :], omega[2, :], alpha, vx, vy], dtype = np.double)
+    X = np.array([euler[0, :], euler[1, :], euler[2, :], omega[0, :], omega[1, :], omega[2, :], alpha, vx, vy, x, y], dtype = np.double)
     ## Control Action
     U_ref = T[:, :]
     
@@ -96,9 +99,6 @@ def liftFun(x):
     x_lift.append(x[4, :]*x[5, :])
 
     x_lift.append(np.tan(x[6, :]))
-    x_lift.append(1/np.cos(x[2, :])**2)
-    x_lift.append(np.sin(x[2, :])/np.cos(x[2, :])**2)
-    x_lift.append(np.cos(x[2, :])/np.cos(x[2, :])**2)
 
     x_lift.append(np.tan(x[6, :])*x[7, :])
 
@@ -109,6 +109,12 @@ def liftFun(x):
     
     x_lift.append((x[5, :]*x[7, :]))
     x_lift.append((x[5, :]*x[8, :]))
+
+    x_lift.append(np.cos(x[2, :])*x[7, :])
+    x_lift.append(np.sin(x[2, :])*x[8, :])
+
+    x_lift.append(np.sin(x[2, :])*x[7, :])
+    x_lift.append(np.cos(x[2, :])*x[8, :])
 
     x_lift = np.array(x_lift, dtype = np.double)
     return x_lift
@@ -127,9 +133,6 @@ def liftFun_vector(x):
     x_lift.append(x[4]*x[5])
 
     x_lift.append(np.tan(x[6]))
-    x_lift.append(1/np.cos(x[2])**2)
-    x_lift.append(np.sin(x[2])/np.cos(x[2])**2)
-    x_lift.append(np.cos(x[2])/np.cos(x[2])**2)
 
     x_lift.append(np.tan(x[6])*x[7])
 
@@ -140,6 +143,12 @@ def liftFun_vector(x):
 
     x_lift.append((x[5]*x[7]))
     x_lift.append((x[5]*x[8]))
+
+    x_lift.append(np.cos(x[2])*x[7])
+    x_lift.append(np.sin(x[2])*x[8])
+
+    x_lift.append(np.sin(x[2])*x[7])
+    x_lift.append(np.cos(x[2])*x[8])
 
     x_lift = np.array(x_lift, dtype = np.double)
     return x_lift
@@ -291,7 +300,7 @@ plt.show()
 plt.imshow(B_a)
 plt.colorbar()
 plt.show()
-
+#
 # New variables in order to verify the identification
 x_estimate = np.zeros((n_normal, X1.shape[1]+1), dtype=np.double)
 output_estimate = np.zeros((n_normal, U.shape[1]), dtype=np.double)
@@ -332,6 +341,10 @@ plt.show()
 
 fig17, ax17, ax27 = fancy_plots_2()
 plot_control_states_estimation(fig17, ax17, ax27, h[:, :], hp[:, :], output_estimate[:, :], t, "Control and Real Values of the system")
+plt.show()
+
+fig14, ax14, ax24, ax34 = fancy_plots_3()
+plot_states_position_estimation(fig14, ax14, ax24, ax34, h[0:3, :], output_estimate[:, :], t, "Position of the system")
 plt.show()
 
 fig18, ax18 = fancy_plots_1()

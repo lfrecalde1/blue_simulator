@@ -388,6 +388,64 @@ def plot_states_position(fig11, ax11, ax21, ax31, x, t, name):
     fig11.savefig(name + ".pdf")
     fig11.savefig(name + ".png")
     
+def plot_states_position_estimation(fig11, ax11, ax21, ax31, x, x_e, t, name):
+    ax11.set_xlim((t[0], t[-1]))
+    ax21.set_xlim((t[0], t[-1]))
+    ax11.set_xticklabels([])
+
+
+    state_1_e, = ax11.plot(t[0:t.shape[0]], x[0, 0:t.shape[0]],
+                    color='#C43C29', lw=1.0, ls="-")
+    state_1_e_k, = ax11.plot(t[0:t.shape[0]], x_e[9, 0:t.shape[0]],
+                    color='#3D4D55', lw=1.0, ls="--")
+
+
+    state_2_e, = ax21.plot(t[0:t.shape[0]], x[1, 0:t.shape[0]],
+                    color='#3FB454', lw=1.0, ls="-")
+
+    state_2_e_k, = ax21.plot(t[0:t.shape[0]], x_e[10, 0:t.shape[0]],
+                    color='#3D4D55', lw=1.0, ls="--")
+
+
+    state_3_e, = ax31.plot(t[0:t.shape[0]], x[2, 0:t.shape[0]],
+                    color='#3F8BB4', lw=1.0, ls="-")
+
+    ax11.set_ylabel(r"$[m]$", rotation='vertical')
+    ax11.legend([state_1_e, state_1_e_k],
+            [ r'$x$',  r'$\hat{x}$'],
+            loc="best",
+            frameon=True, fancybox=True, shadow=False, ncol=2,
+            borderpad=0.5, labelspacing=0.5, handlelength=3, handletextpad=0.1,
+            borderaxespad=0.3, columnspacing=2)
+    ax11.grid(color='#949494', linestyle='-.', linewidth=0.5)
+
+    ## Figure 2
+    #fig2, ax2 = fancy_plots()
+    ax21.set_ylabel(r"$[m]$", rotation='vertical')
+    ax21.legend([state_2_e, state_2_e_k],
+            [r'$y$', r'$\hat{y}$'],
+            loc="best",
+            frameon=True, fancybox=True, shadow=False, ncol=2,
+            borderpad=0.5, labelspacing=0.5, handlelength=3, handletextpad=0.1,
+            borderaxespad=0.3, columnspacing=2)
+    ax21.grid(color='#949494', linestyle='-.', linewidth=0.5)
+    ax21.set_xticklabels([])
+    
+    ax31.set_ylabel(r"$[m]$", rotation='vertical')
+    ax31.legend([state_3_e],
+            [r'$z$'],
+            loc="best",
+            frameon=True, fancybox=True, shadow=False, ncol=2,
+            borderpad=0.5, labelspacing=0.5, handlelength=3, handletextpad=0.1,
+            borderaxespad=0.3, columnspacing=2)
+    ax31.grid(color='#949494', linestyle='-.', linewidth=0.5)
+    ax31.axis([t[0], t[-1], x[2,:].min()-0.1, x[2,:].max()+0.1])
+    ax31.set_xlabel(r"$\textrm{Time}[s]$", labelpad=5)
+
+
+    fig11.savefig(name + ".pdf")
+    fig11.savefig(name + ".png")
+    
 def plot_states_velocity_lineal(fig11, ax11, ax21, ax31, x, t, name):
     ax11.set_xlim((t[0], t[-1]))
     ax21.set_xlim((t[0], t[-1]))

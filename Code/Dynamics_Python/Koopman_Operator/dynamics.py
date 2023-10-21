@@ -88,9 +88,25 @@ def liftFun(x):
     x_lift.append(1/np.cos(x[0, :])**2)
     x_lift.append(np.sin(x[0, :])/np.cos(x[0, :])**2)
     x_lift.append(-np.cos(x[0, :])/np.cos(x[0, :])**2)
+    
     x_lift.append(np.tan(x[2, :])*x[3, :])
-    x_lift.append(np.sin(x[2, :])*x[3, :])
+
     x_lift.append(np.cos(x[2, :])*x[3, :])
+    x_lift.append(np.sin(x[2, :])*x[3, :])
+    x_lift.append(np.cos(x[2, :])*x[4, :])
+    x_lift.append(np.sin(x[2, :])*x[4, :])
+
+    x_lift.append(np.sin(x[2, :])*(x[2, :]-(x[1, :] + x[4, :])))
+    x_lift.append(np.cos(x[2, :])*(x[2, :]-(x[1, :] + x[4, :])))
+    x_lift.append((x[1, :] - x[4, :]))
+
+    x_lift.append(np.sin(x[2, :])*(x[2, :]-(x[1, :] + x[3, :])))
+    x_lift.append(np.cos(x[2, :])*(x[2, :]-(x[1, :] + x[3, :])))
+    x_lift.append((x[1, :] - x[3, :]))
+
+    x_lift.append((x[1, :]*x[3, :]))
+    x_lift.append((x[1, :]*x[4, :]))
+    
     x_lift = np.array(x_lift, dtype = np.double)
     return x_lift
 
@@ -101,9 +117,25 @@ def liftFun_vector(x):
     x_lift.append(1/np.cos(x[0])**2)
     x_lift.append(np.sin(x[0])/np.cos(x[0])**2)
     x_lift.append(-np.cos(x[0])/np.cos(x[0])**2)
+
     x_lift.append(np.tan(x[2])*x[3])
-    x_lift.append(np.sin(x[2])*x[3])
+
     x_lift.append(np.cos(x[2])*x[3])
+    x_lift.append(np.sin(x[2])*x[3])
+    x_lift.append(np.cos(x[2])*x[4])
+    x_lift.append(np.sin(x[2])*x[4])
+
+    x_lift.append(np.sin(x[2])*(x[2]-(x[1] + x[4])))
+    x_lift.append(np.cos(x[2])*(x[2]-(x[1] + x[4])))
+    x_lift.append((x[1] - x[4]))
+
+    x_lift.append(np.sin(x[2])*(x[2]-(x[1] + x[3])))
+    x_lift.append(np.cos(x[2])*(x[2]-(x[1] + x[3])))
+    x_lift.append((x[1] - x[3]))
+
+    x_lift.append((x[1]*x[3]))
+    x_lift.append((x[1]*x[4]))
+
     x_lift = np.array(x_lift, dtype = np.double)
     return x_lift
     
@@ -218,7 +250,6 @@ vel_control = Data['vel_control']
 vel_control = vel_control.T
 
 h, hp, T = get_odometry(data_odom_blue, steering_real, vx, vy, vz, wx, wy, wz, vel_control, steering_control, 2000)
-
 ## Compute sample time of the system
 ts = 0.05
 t = np.zeros((T.shape[1]), dtype = np.double)
@@ -284,6 +315,9 @@ for k in range(0, U.shape[1]):
 
     aux_states = liftFun_vector(x_estimate[:, k])
     x_estimate[:, k+1] = C_a@(A_a@aux_states + B_a@U[:, k])
+
+print("Error estimation norm")
+print(np.linalg.norm(norm_error))
 
 fig13, ax13, ax23, ax33 = fancy_plots_3()
 plot_states_angles_estimation(fig13, ax13, ax23, ax33, h[7:10, :], output_estimate[:, :], t, "Euler Angles Of the system")

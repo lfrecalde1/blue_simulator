@@ -8,6 +8,7 @@ from scipy.spatial.transform import Rotation as R
 from fancy_plots import fancy_plots_3, plot_states_angles, plot_states_position, plot_states_velocity_lineal, plot_states_velocity_angular
 from fancy_plots import plot_states_angles_estimation, plot_states_velocity_lineal_estimation, plot_states_velocity_angular_estimation, plot_control_states_estimation
 from fancy_plots import fancy_plots_2, plot_control_states
+from fancy_plots import fancy_plots_1, plot_error_estimation
 
 def get_odometry(data, angle, vx, vy, vz, wx, wy, wz, vel_control, steer_control, samples):
     # Get size of the data
@@ -90,8 +91,6 @@ def liftFun(x):
     x_lift.append(np.tan(x[2, :])*x[3, :])
     x_lift.append(np.sin(x[2, :])*x[3, :])
     x_lift.append(np.cos(x[2, :])*x[3, :])
-    x_lift.append(np.sin(x[2, :])*x[4, :])
-    x_lift.append(np.cos(x[2, :])*x[4, :])
     x_lift = np.array(x_lift, dtype = np.double)
     return x_lift
 
@@ -105,8 +104,6 @@ def liftFun_vector(x):
     x_lift.append(np.tan(x[2])*x[3])
     x_lift.append(np.sin(x[2])*x[3])
     x_lift.append(np.cos(x[2])*x[3])
-    x_lift.append(np.sin(x[2])*x[4])
-    x_lift.append(np.cos(x[2])*x[4])
     x_lift = np.array(x_lift, dtype = np.double)
     return x_lift
     
@@ -146,14 +143,14 @@ def cost_function_koopman(X_1, X_k, U, alpha, beta, n, m, n_normal):
         x_1 = C_a@X_1_ca[:, k]
         x_k = C_a@X_k_ca[:, k]
         
-        
         Gamma_k = X_k_ca[:, k]
         Gamma_1 = X_1_ca[:, k]
         
         error_koop = Gamma_k - A@Gamma_1 - B@U_ca[:, k]
         error_prediction = x_k - C_a@(A@Gamma_1 + B@U_ca[:, k])
-        obj = obj + beta*ca.norm_2(error_koop) + ca.norm_2(error_prediction) + alpha*ca.norm_fro(A) + alpha*ca.norm_fro(B)
+        obj = obj + beta*ca.norm_2(error_koop) + ca.norm_2(error_prediction) 
     
+    obj = obj + alpha*ca.norm_fro(A) + alpha*ca.norm_fro(B)
 
     OPT_variables = ca.vertcat(A.reshape((-1, 1)), B.reshape((-1, 1)))
     # Initial Values Problem 
@@ -185,7 +182,7 @@ def cost_function_koopman(X_1, X_k, U, alpha, beta, n, m, n_normal):
 
 
 ## Load Matrices from mat file
-Data = scipy.io.loadmat('blue_data_03.mat')
+Data = scipy.io.loadmat('blue_data_01.mat')
 
 ## Get odometry of the system
 data_odom_blue = Data['data_odom_blue']
@@ -250,7 +247,7 @@ U = U_n
 n = X1.shape[0]
 m = U.shape[0]
 
-alpha = 0.01
+alpha = 0.2
 beta = 0.2
 
 A_a, B_a = cost_function_koopman(X1, X2, U, alpha, beta, n, m, n_normal)
@@ -303,3 +300,6 @@ plt.show()
 fig17, ax17, ax27 = fancy_plots_2()
 plot_control_states_estimation(fig17, ax17, ax27, h[:, :], hp[:, :], output_estimate[:, :], t, "Control and Real Values of the system")
 plt.show()
+
+fig18, ax18 = fancy_plots_1()
+plot_error_estimation(fig18, ax18, norm_error, t, 'Error Norm of the Estimation')

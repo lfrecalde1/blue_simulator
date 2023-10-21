@@ -695,3 +695,22 @@ def plot_control_states_estimation(fig11, ax11, ax21, x, xp, x_e, t, name):
   
     fig11.savefig(name + ".pdf")
     fig11.savefig(name + ".png")
+
+def plot_error_estimation(fig11, ax11, x_e, t, name):
+    ax11.set_xlim((t[0], t[-1]))
+
+
+    state_1_e, = ax11.plot(t[0:t.shape[0]], x_e[0, 0:t.shape[0]],
+                    color='#C43C29', lw=1.0, ls="-")
+    
+    ax11.set_ylabel(r"$[error]$", rotation='vertical')
+    ax11.legend([state_1_e],
+            [ r'$error$'],
+            loc="best",
+            frameon=True, fancybox=True, shadow=False, ncol=2,
+            borderpad=0.5, labelspacing=0.5, handlelength=3, handletextpad=0.1,
+            borderaxespad=0.3, columnspacing=2)
+    ax11.grid(color='#949494', linestyle='-.', linewidth=0.5)
+
+    fig11.savefig(name + ".pdf")
+    fig11.savefig(name + ".png")

@@ -185,16 +185,22 @@ def cost_function_koopman(X_1, X_k, U, alpha, beta, n, m, n_normal):
 
     args = {}
     
-    for k in range(0, U_ca.shape[1]):
-        x_1 = C_a@X_1_ca[:, k]
-        x_k = C_a@X_k_ca[:, k]
+    x_1 = C_a@X_1_ca
+    x_k = C_a@X_k_ca
         
-        Gamma_k = X_k_ca[:, k]
-        Gamma_1 = X_1_ca[:, k]
+    Gamma_k = X_k_ca
+    Gamma_1 = X_1_ca
         
-        error_koop = Gamma_k - A@Gamma_1 - B@U_ca[:, k]
-        error_prediction = x_k - C_a@(A@Gamma_1 + B@U_ca[:, k])
-        obj = obj + beta*ca.norm_fro(error_koop) + ca.norm_fro(error_prediction) 
+    error_koop = Gamma_k - A@Gamma_1 - B@U_ca
+    error_prediction = x_k - C_a@(A@Gamma_1 + B@U_ca)
+
+    print(error_koop.shape)
+
+    error_koop_vector = error_koop.reshape((-1, 1))
+    error_prediction_vector = error_prediction.reshape((-1, 1))
+
+
+    obj = obj + beta*ca.norm_fro(error_koop_vector) + ca.norm_fro(error_prediction_vector) 
     
     obj = obj + alpha*ca.norm_fro(A) + alpha*ca.norm_fro(B)
 
@@ -226,6 +232,12 @@ def cost_function_koopman(X_1, X_k, U, alpha, beta, n, m, n_normal):
     return A_final, B_final
 
 
+def normalization_f(x, x_min, x_max):
+    i, j = x.shape
+    x_norm = np.zeros((i, j), dtype=np.double)
+    for k in range(0, j):
+        x_norm[:, k] = (x[:, k])/(x_max)
+    return x_norm
 
 ## Load Matrices from mat file
 Data = scipy.io.loadmat('blue_data_02.mat')
@@ -263,7 +275,7 @@ wz = wz.T
 vel_control = Data['vel_control']
 vel_control = vel_control.T
 
-h, hp, T = get_odometry(data_odom_blue, steering_real, vx, vy, vz, wx, wy, wz, vel_control, steering_control, 500)
+h, hp, T = get_odometry(data_odom_blue, steering_real, vx, vy, vz, wx, wy, wz, vel_control, steering_control, 200)
 ## Compute sample time of the system
 ts = 0.05
 t = np.zeros((T.shape[1]), dtype = np.double)
@@ -279,6 +291,21 @@ n_normal = X1_n.shape[0]
 X1 = liftFun(X1_n)
 X2 = liftFun(X2_n)
 U = U_n
+
+# Normalize Data
+X1_min = np.min(X1, axis=1)
+X2_min = np.min(X2, axis=1)
+U_min = np.min(U, axis=1)
+
+
+X1_max = np.max(X1, axis=1)
+X2_max = np.max(X2, axis=1)
+U_max = np.max(U, axis=1)
+
+X1_norm = normalization_f(X1, X1_min, X1_max)
+X2_norm = normalization_f(X2, X2_min, X2_max)
+U_norm = normalization_f(U, U_min, U_max)
+
 n = X1.shape[0]
 m = U.shape[0]
 
@@ -286,7 +313,9 @@ alpha = 0.2
 beta = 0.5
 
 # Optimization
-A_a, B_a = cost_function_koopman(X1, X2, U, alpha, beta, n, m, n_normal)
+#A_a, B_a = cost_function_koopman(X1, X2, U, alpha, beta, n, m, n_normal)
+A_a = np.zeros((n, n), dtype=np.double)
+B_a = np.zeros((n, m), dtype=np.double)
 C_ones = np.eye(n_normal, dtype = np.double)
 C_zeros = np.zeros((n_normal, n - n_normal), dtype=np.double)
 C_a = np.hstack((C_ones, C_zeros))
@@ -328,7 +357,7 @@ print("Print Eigvalues A")
 print(eig_A)
 
 fig13, ax13, ax23, ax33 = fancy_plots_3()
-plot_states_angles_estimation(fig13, ax13, ax23, ax33, h[7:10, :], output_estimate[:, :], t, "Euler Angles Of the system")
+plot_states_angles_estimation(fig13, ax13, ax23, ax33, h[7:10, :], X1_norm[:, :], t, "Euler Angles Of the system")
 plt.show()
 
 fig15, ax15, ax25, ax35 = fancy_plots_3()

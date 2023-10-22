@@ -272,7 +272,7 @@ def plot_states_angles(fig11, ax11, ax21, ax31, x, t, name):
             borderpad=0.5, labelspacing=0.5, handlelength=3, handletextpad=0.1,
             borderaxespad=0.3, columnspacing=2)
     ax31.grid(color='#949494', linestyle='-.', linewidth=0.5)
-    ax31.axis([t[0], t[-1], x[2,:].min()-0.1, x[2,:].max()+0.1])
+    #ax31.axis([t[0], t[-1], x[2,:].min()-0.1, x[2,:].max()+0.1])
     ax31.set_xlabel(r"$\textrm{Time}[s]$", labelpad=5)
 
 
@@ -328,7 +328,7 @@ def plot_states_angles_estimation(fig11, ax11, ax21, ax31, x, x_e, t, name):
             borderpad=0.5, labelspacing=0.5, handlelength=3, handletextpad=0.1,
             borderaxespad=0.3, columnspacing=2)
     ax31.grid(color='#949494', linestyle='-.', linewidth=0.5)
-    ax31.axis([t[0], t[-1], x[2,:].min()-0.1, x[2,:].max()+0.1])
+    #ax31.axis([t[0], t[-1], x[2,:].min()-0.1, x[2,:].max()+0.1])
     ax31.set_xlabel(r"$\textrm{Time}[s]$", labelpad=5)
 
 

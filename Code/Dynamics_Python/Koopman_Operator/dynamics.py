@@ -74,7 +74,7 @@ def get_simple_data(h, hp, T):
     
     ## General states data
     #X = np.array([euler[2,:], omega[2, :], alpha, vx, vy], dtype = np.double)
-    X = np.array([euler[0, :], euler[1, :], euler[2, :], omega[0, :], omega[1, :], omega[2, :], alpha, vx, vy, x, y], dtype = np.double)
+    X = np.array([euler[2, :], omega[0, :], omega[1, :], omega[2, :], alpha, vx, vy, x, y], dtype = np.double)
     ## Control Action
     U_ref = T[:, :]
     
@@ -88,69 +88,71 @@ def get_simple_data(h, hp, T):
 def liftFun(x):
     x_lift = []
     for k in x: x_lift.append(k)
-    x_lift.append(np.sin(x[0, :])*np.tan(x[1, :])*x[4, :])
-    x_lift.append(np.cos(x[0, :])*np.tan(x[1, :])*x[5, :])
-    x_lift.append(np.cos(x[0, :])*x[4, :])
-    x_lift.append(np.sin(x[0, :])*x[5, :])
-    x_lift.append(np.sin(x[0, :])/np.cos(x[1, :])*x[4, :])
-    x_lift.append(np.cos(x[0, :])/np.cos(x[1, :])*x[5, :])
-    x_lift.append(x[3, :]*x[4, :])
-    x_lift.append(x[3, :]*x[5, :])
-    x_lift.append(x[4, :]*x[5, :])
+    #x_lift.append(np.sin(x[0, :])*np.tan(x[1, :])*x[4, :])
+    #x_lift.append(np.cos(x[0, :])*np.tan(x[1, :])*x[5, :])
+    #x_lift.append(np.cos(x[0, :])*x[4, :])
+    #x_lift.append(np.sin(x[0, :])*x[5, :])
+    #x_lift.append(np.sin(x[0, :])/np.cos(x[1, :])*x[4, :])
+    #x_lift.append(np.cos(x[0, :])/np.cos(x[1, :])*x[5, :])
 
-    x_lift.append(np.tan(x[6, :]))
+    x_lift.append(x[1, :]*x[2, :])
+    x_lift.append(x[1, :]*x[3, :])
+    x_lift.append(x[2, :]*x[3, :])
 
-    x_lift.append(np.tan(x[6, :])*x[7, :])
+    x_lift.append(np.tan(x[4, :]))
 
-    x_lift.append(np.cos(x[6, :])*x[7, :])
-    x_lift.append(np.sin(x[6, :])*x[7, :])
-    x_lift.append(np.cos(x[6, :])*x[8, :])
-    x_lift.append(np.sin(x[6, :])*x[8, :])
+    x_lift.append(np.tan(x[4, :])*x[5, :])
+
+    x_lift.append(np.cos(x[4, :])*x[5, :])
+    x_lift.append(np.sin(x[4, :])*x[5, :])
+    x_lift.append(np.cos(x[4, :])*x[6, :])
+    x_lift.append(np.sin(x[4, :])*x[6, :])
     
-    x_lift.append((x[5, :]*x[7, :]))
-    x_lift.append((x[5, :]*x[8, :]))
+    x_lift.append(x[3, :]*x[5, :])
+    x_lift.append(x[3, :]*x[6, :])
 
-    x_lift.append(np.cos(x[2, :])*x[7, :])
-    x_lift.append(np.sin(x[2, :])*x[8, :])
+    x_lift.append(np.cos(x[0, :])*x[5, :])
+    x_lift.append(np.sin(x[0, :])*x[6, :])
 
-    x_lift.append(np.sin(x[2, :])*x[7, :])
-    x_lift.append(np.cos(x[2, :])*x[8, :])
+    x_lift.append(np.sin(x[0, :])*x[5, :])
+    x_lift.append(np.cos(x[0, :])*x[6, :])
 
-    x_lift = np.array(x_lift, dtype = np.double)
+    x_lift = np.array(x_lift, dtype=np.double)
     return x_lift
 
 def liftFun_vector(x):
     x_lift = []
     for k in x: x_lift.append(k)
-    x_lift.append(np.sin(x[0])*np.tan(x[1])*x[4])
-    x_lift.append(np.cos(x[0])*np.tan(x[1])*x[5])
-    x_lift.append(np.cos(x[0])*x[4])
-    x_lift.append(np.sin(x[0])*x[5])
-    x_lift.append(np.sin(x[0])/np.cos(x[1])*x[4])
-    x_lift.append(np.cos(x[0])/np.cos(x[1])*x[5])
-    x_lift.append(x[3]*x[4])
+    #x_lift.append(np.sin(x[0])*np.tan(x[1])*x[4])
+    #x_lift.append(np.cos(x[0])*np.tan(x[1])*x[5])
+    #x_lift.append(np.cos(x[0])*x[4])
+    #x_lift.append(np.sin(x[0])*x[5])
+    #x_lift.append(np.sin(x[0])/np.cos(x[1])*x[4])
+    #x_lift.append(np.cos(x[0])/np.cos(x[1])*x[5])
+
+    x_lift.append(x[1]*x[2])
+    x_lift.append(x[1]*x[3])
+    x_lift.append(x[2]*x[3])
+
+    x_lift.append(np.tan(x[4]))
+
+    x_lift.append(np.tan(x[4])*x[5])
+
+    x_lift.append(np.cos(x[4])*x[5])
+    x_lift.append(np.sin(x[4])*x[5])
+    x_lift.append(np.cos(x[4])*x[6])
+    x_lift.append(np.sin(x[4])*x[6])
+    
     x_lift.append(x[3]*x[5])
-    x_lift.append(x[4]*x[5])
+    x_lift.append(x[3]*x[6])
 
-    x_lift.append(np.tan(x[6]))
+    x_lift.append(np.cos(x[0])*x[5])
+    x_lift.append(np.sin(x[0])*x[6])
 
-    x_lift.append(np.tan(x[6])*x[7])
+    x_lift.append(np.sin(x[0])*x[5])
+    x_lift.append(np.cos(x[0])*x[6])
 
-    x_lift.append(np.cos(x[6])*x[7])
-    x_lift.append(np.sin(x[6])*x[7])
-    x_lift.append(np.cos(x[6])*x[8])
-    x_lift.append(np.sin(x[6])*x[8])
-
-    x_lift.append((x[5]*x[7]))
-    x_lift.append((x[5]*x[8]))
-
-    x_lift.append(np.cos(x[2])*x[7])
-    x_lift.append(np.sin(x[2])*x[8])
-
-    x_lift.append(np.sin(x[2])*x[7])
-    x_lift.append(np.cos(x[2])*x[8])
-
-    x_lift = np.array(x_lift, dtype = np.double)
+    x_lift = np.array(x_lift, dtype=np.double)
     return x_lift
     
 def create_matrix(A, data):
@@ -194,7 +196,6 @@ def cost_function_koopman(X_1, X_k, U, alpha, beta, n, m, n_normal):
     error_koop = Gamma_k - A@Gamma_1 - B@U_ca
     error_prediction = x_k - C_a@(A@Gamma_1 + B@U_ca)
 
-    print(error_koop.shape)
 
     error_koop_vector = error_koop.reshape((-1, 1))
     error_prediction_vector = error_prediction.reshape((-1, 1))
@@ -240,7 +241,7 @@ def normalization_f(x, x_min, x_max):
     return x_norm
 
 ## Load Matrices from mat file
-Data = scipy.io.loadmat('blue_data_02.mat')
+Data = scipy.io.loadmat('blue_data_01.mat')
 
 ## Get odometry of the system
 data_odom_blue = Data['data_odom_blue']
@@ -275,7 +276,7 @@ wz = wz.T
 vel_control = Data['vel_control']
 vel_control = vel_control.T
 
-h, hp, T = get_odometry(data_odom_blue, steering_real, vx, vy, vz, wx, wy, wz, vel_control, steering_control, 200)
+h, hp, T = get_odometry(data_odom_blue, steering_real, vx, vy, vz, wx, wy, wz, vel_control, steering_control, 500)
 ## Compute sample time of the system
 ts = 0.05
 t = np.zeros((T.shape[1]), dtype = np.double)
@@ -296,12 +297,12 @@ U = U_n
 X1_min = np.min(X1, axis=1)
 X2_min = np.min(X2, axis=1)
 U_min = np.min(U, axis=1)
-
-
+#
+#
 X1_max = np.max(X1, axis=1)
 X2_max = np.max(X2, axis=1)
 U_max = np.max(U, axis=1)
-
+#
 X1_norm = normalization_f(X1, X1_min, X1_max)
 X2_norm = normalization_f(X2, X2_min, X2_max)
 U_norm = normalization_f(U, U_min, U_max)
@@ -309,13 +310,13 @@ U_norm = normalization_f(U, U_min, U_max)
 n = X1.shape[0]
 m = U.shape[0]
 
-alpha = 0.2
-beta = 0.5
+alpha = 0.0
+beta = 0.2
 
 # Optimization
-#A_a, B_a = cost_function_koopman(X1, X2, U, alpha, beta, n, m, n_normal)
-A_a = np.zeros((n, n), dtype=np.double)
-B_a = np.zeros((n, m), dtype=np.double)
+A_a, B_a = cost_function_koopman(X1 , X2, U, alpha, beta, n, m, n_normal)
+#A_a = np.zeros((n, n), dtype=np.double)
+#B_a = np.zeros((n, m), dtype=np.double)
 C_ones = np.eye(n_normal, dtype = np.double)
 C_zeros = np.zeros((n_normal, n - n_normal), dtype=np.double)
 C_a = np.hstack((C_ones, C_zeros))
@@ -357,7 +358,7 @@ print("Print Eigvalues A")
 print(eig_A)
 
 fig13, ax13, ax23, ax33 = fancy_plots_3()
-plot_states_angles_estimation(fig13, ax13, ax23, ax33, h[7:10, :], X1_norm[:, :], t, "Euler Angles Of the system")
+plot_states_angles_estimation(fig13, ax13, ax23, ax33, h[7:10, :], output_estimate[:, :], t, "Euler Angles Of the system")
 plt.show()
 
 fig15, ax15, ax25, ax35 = fancy_plots_3()

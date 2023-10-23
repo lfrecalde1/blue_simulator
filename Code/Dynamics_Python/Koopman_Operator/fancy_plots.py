@@ -296,7 +296,7 @@ def plot_states_angles_estimation(fig11, ax11, ax21, ax31, x, x_e, t, name):
     state_3_e, = ax31.plot(t[0:t.shape[0]], x[2, 0:t.shape[0]],
                     color='#3F8BB4', lw=1.0, ls="-")
 
-    state_3_e_k, = ax31.plot(t[0:t.shape[0]], x_e[2, 0:t.shape[0]],
+    state_3_e_k, = ax31.plot(t[0:t.shape[0]], x_e[0, 0:t.shape[0]],
                     color='#3D4D55', lw=1.0, ls="--")
 
     ax11.set_ylabel(r"$[rad]$", rotation='vertical')
@@ -396,14 +396,14 @@ def plot_states_position_estimation(fig11, ax11, ax21, ax31, x, x_e, t, name):
 
     state_1_e, = ax11.plot(t[0:t.shape[0]], x[0, 0:t.shape[0]],
                     color='#C43C29', lw=1.0, ls="-")
-    state_1_e_k, = ax11.plot(t[0:t.shape[0]], x_e[9, 0:t.shape[0]],
+    state_1_e_k, = ax11.plot(t[0:t.shape[0]], x_e[4, 0:t.shape[0]],
                     color='#3D4D55', lw=1.0, ls="--")
 
 
     state_2_e, = ax21.plot(t[0:t.shape[0]], x[1, 0:t.shape[0]],
                     color='#3FB454', lw=1.0, ls="-")
 
-    state_2_e_k, = ax21.plot(t[0:t.shape[0]], x_e[10, 0:t.shape[0]],
+    state_2_e_k, = ax21.plot(t[0:t.shape[0]], x_e[5, 0:t.shape[0]],
                     color='#3D4D55', lw=1.0, ls="--")
 
 
@@ -508,7 +508,7 @@ def plot_states_velocity_lineal_estimation(fig11, ax11, ax21, ax31, x, x_e, t, n
     state_1_e, = ax11.plot(t[0:t.shape[0]], x[0, 0:t.shape[0]],
                     color='#C43C29', lw=1.0, ls="-")
 
-    state_1_e_k, = ax11.plot(t[0:t.shape[0]], x_e[7, 0:t.shape[0]],
+    state_1_e_k, = ax11.plot(t[0:t.shape[0]], x_e[3, 0:t.shape[0]],
                     color='#3D4D55', lw=1.0, ls="--")
 
 
@@ -625,7 +625,7 @@ def plot_states_velocity_angular_estimation(fig11, ax11, ax21, ax31, x, x_e, t, 
     state_3_e, = ax31.plot(t[0:t.shape[0]], x[2, 0:t.shape[0]],
                     color='#3F8BB4', lw=1.0, ls="-")
                     
-    state_3_e_k, = ax31.plot(t[0:t.shape[0]], x_e[5, 0:t.shape[0]],
+    state_3_e_k, = ax31.plot(t[0:t.shape[0]], x_e[1, 0:t.shape[0]],
                     color='#3D4D55', lw=1.0, ls="-")
 
     ax11.set_ylabel(r"$[rad/s]$", rotation='vertical')
@@ -718,14 +718,14 @@ def plot_control_states_estimation(fig11, ax11, ax21, x, xp, x_e, t, name):
     state_1_e, = ax11.plot(t[0:t.shape[0]], xp[0, 0:t.shape[0]],
                     color='#C43C29', lw=1.0, ls="--")
     
-    state_1_c, = ax11.plot(t[0:t.shape[0]], x_e[7, 0:t.shape[0]],
+    state_1_c, = ax11.plot(t[0:t.shape[0]], x_e[3, 0:t.shape[0]],
                     color='#3D4D55', lw=1.0, ls="-")
 
 
     state_2_e, = ax21.plot(t[0:t.shape[0]], x[10,0:t.shape[0]],
                     color='#3FB454', lw=1.0, ls="--")
     
-    state_2_c, = ax21.plot(t[0:t.shape[0]], x_e[6, 0:t.shape[0]],
+    state_2_c, = ax21.plot(t[0:t.shape[0]], x_e[2, 0:t.shape[0]],
                     color='#3D4D55', lw=1.0, ls="-")
 
 

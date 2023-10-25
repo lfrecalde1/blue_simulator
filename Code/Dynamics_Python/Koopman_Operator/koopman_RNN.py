@@ -148,15 +148,14 @@ class koop_model(torch.nn.Module):
         Layers = OrderedDict()
         self.n_layers = 6
         self.hidden_dim = 28
-        aux = 0
-        #Layers["dropout_{}".format(0)] = nn.Dropout(0.20)
-        #Layers["RNN_{}".format(1)] = nn.RNN(12, self.hidden_dim, self.n_layers, batch_first=True) 
-        #Layers["Linear_{}".format(2)] = nn.Linear(self.hidden_dim, encode_layers[-1])
-        
+
         self.rnn = nn.RNN(12, self.hidden_dim, self.n_layers, batch_first=True)   
         # Fully connected layer
         self.fc = nn.Linear(self.hidden_dim, encode_layers[-1])
-    
+
+        self.l2_regularization = nn.Parameter(torch.tensor(0.001, requires_grad=False))
+        self.dropout = nn.Dropout(0.20)
+
         self.A = nn.Linear(n, n,bias=False)
         self.A.weight.data = torch.eye(n)*0.1
         self.B = nn.Linear(m, n,bias=False)
@@ -229,9 +228,9 @@ def cost_koopman(X1, X2, U, net):
     
     error_koop_new = error_koop.reshape((error_koop.shape[1]*error_koop.shape[2], 1))
     error_prediction_new = error_prediction.reshape((error_prediction.shape[1]*error_prediction.shape[2], 1))
-    error_prediction_real_new = error_prediction_real.reshape((error_prediction_real.shape[1]*error_prediction_real.shape[2], 1))
+    error_prediction_real_new = error_prediction_real
     
-    loss =  0.1*torch.norm(error_koop_new, p=2) + 1*torch.norm(error_prediction_real_new, p=2)
+    loss =  0.0*torch.norm(error_koop_new, p=2) + 1*torch.norm(error_prediction_real_new, p='fro')
     return loss
 
 def Eig_loss(net):
@@ -242,13 +241,13 @@ def Eig_loss(net):
     loss = c[mask].sum()
     return loss
 
-def learning_network(neural_network, num_epochs, lr, batch_size):
+def learning_network(neural_network, num_epochs, lr, Kbatch_size):
     # Optimizaer definition
     optimizer = torch.optim.Adam(neural_network.parameters(), lr)
 
     # Epochs parameters
     losses = defaultdict(lambda: defaultdict(list))
-    Kbatch_size = 200
+    #Kbatch_size = 200
 
     for epoch in tqdm(range(num_epochs), desc="Koopman Neural Network: training epoch"):
             #loss.backward(retain_graph = True)
@@ -274,7 +273,7 @@ def learning_network(neural_network, num_epochs, lr, batch_size):
 
             losses["Koopman"]["collocation"].append(loss.item())
             losses["Koopman"]["num_epochs"].append(epoch)
-    return neural_network
+    return neural_network, losses
 
     
 ## Load Matrices from mat file
@@ -355,7 +354,7 @@ if torch.cuda.is_available():
     neural_network.cuda() 
 neural_network.double()
 
-neural_network = learning_network(neural_network, 500, 0.001, 200)
+neural_network, losses = learning_network(neural_network, 10000, 0.001, 500)
 
 # Validation Data = scipy.io.loadmat('blue_data_02.mat')
 ## Get odometry of the system
@@ -503,4 +502,13 @@ plt.show()
 
 fig18, ax18 = fancy_plots_1()
 plot_error_estimation(fig18, ax18, norm_error, t, 'Error Norm of the Estimation')
+plt.show()
+
+losses["Koopman"]["collocation"]
+costo = np.array(losses["Koopman"]["collocation"])
+epochs = np.array(losses["Koopman"]["num_epochs"])
+costo = costo.reshape(1, costo.shape[0])
+
+fig19, ax19 = fancy_plots_1()
+plot_error_estimation(fig19, ax19, costo, epochs, 'Training Cost')
 plt.show()

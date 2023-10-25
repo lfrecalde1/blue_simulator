@@ -146,8 +146,8 @@ class koop_model(torch.nn.Module):
     def __init__(self, encode_layers, n, m, n_normal, real_output):
         super(koop_model,self).__init__()
         Layers = OrderedDict()
-        self.n_layers = 6
-        self.hidden_dim = 28
+        self.n_layers = 20
+        self.hidden_dim = 128
 
         self.rnn = nn.RNN(12, self.hidden_dim, self.n_layers, batch_first=True)   
         # Fully connected layer

@@ -242,6 +242,41 @@ def Eig_loss(net):
     loss = c[mask].sum()
     return loss
 
+def learning_network(neural_network, num_epochs, lr, batch_size):
+    # Optimizaer definition
+    optimizer = torch.optim.Adam(neural_network.parameters(), lr)
+
+    # Epochs parameters
+    losses = defaultdict(lambda: defaultdict(list))
+    Kbatch_size = 200
+
+    for epoch in tqdm(range(num_epochs), desc="Koopman Neural Network: training epoch"):
+            #loss.backward(retain_graph = True)
+            Kindex = list(range(X1_tensor.shape[1]))
+            random.shuffle(Kindex)
+
+
+            Kloss = cost_koopman(X1_tensor[:, Kindex[:Kbatch_size]], X2_tensor[:, Kindex[:Kbatch_size]], U_tensor[:, Kindex[:Kbatch_size]], neural_network)
+            Eloss =  Eig_loss(neural_network)
+            loss = Kloss
+
+            # Optimize Network
+            optimizer.zero_grad()
+
+            # Backward pass: compute gradient of the loss with respect to model
+            # parameters
+            loss.backward()
+
+            # Calling the step function on an Optimizer makes an update to its
+            # parameters
+            optimizer.step()
+
+
+            losses["Koopman"]["collocation"].append(loss.item())
+            losses["Koopman"]["num_epochs"].append(epoch)
+    return neural_network
+
+    
 ## Load Matrices from mat file
 Data = scipy.io.loadmat('blue_data_02.mat')
 
@@ -305,11 +340,6 @@ X1_tensor = X1_tensor.double()
 X2_tensor =  torch.tensor(X2).to(device)
 X2_tensor = X2_tensor.double()
 
-
-C_eye = torch.eye(n_normal,  device=device)
-C_zeros = torch.zeros((n_normal, n - n_normal), device=device)
-C = torch.cat((C_eye, C_zeros), dim=1)
-
 U_tensor =  torch.tensor(U, requires_grad = True).to(device)
 U_tensor =  U_tensor.double()
 
@@ -325,38 +355,152 @@ if torch.cuda.is_available():
     neural_network.cuda() 
 neural_network.double()
 
-# Optimizer Parameters
-optimizer = torch.optim.Adam(neural_network.parameters(), lr=0.0005)
+neural_network = learning_network(neural_network, 500, 0.001, 200)
 
-# Epochs parameters
-losses = defaultdict(lambda: defaultdict(list))
-num_epochs = 10000
-Kbatch_size = 200
+# Validation Data = scipy.io.loadmat('blue_data_02.mat')
+## Get odometry of the system
+data_odom_blue = Data['data_odom_blue']
+data_odom_blue = data_odom_blue.T
 
-for epoch in tqdm(range(num_epochs), desc="Koopman Neural Network: training epoch"):
-        #loss.backward(retain_graph = True)
-        Kindex = list(range(X1_tensor.shape[1]))
-        random.shuffle(Kindex)
-        
-        
-        Kloss = cost_koopman(X1_tensor[:, Kindex[:Kbatch_size]], X2_tensor[:, Kindex[:Kbatch_size]], U_tensor[:, Kindex[:Kbatch_size]], neural_network)
-        Eloss =  Eig_loss(neural_network)
-        loss = Kloss
+## Get Control steer angle
+steering_control = Data['steering_control']
+steering_control = steering_control.T
+steering_control = steering_control*(np.pi/180)
 
-        # Optimize Network
-        optimizer.zero_grad()
+## Get Steer angle real
+steering_real = Data['steering_real']
+steering_real = steering_real.T
+steering_real = steering_real*(np.pi/180)
 
-        # Backward pass: compute gradient of the loss with respect to model
-        # parameters
-        loss.backward()
+## Get system velocities
+vx = Data['vel_real']
+vx = vx.T
+vy = Data['vy']
+vy = vy.T
+vz = Data['vz']
+vz = vz.T
+wx = Data['wx']
+wx = wx.T
+wy = Data['wy']
+wy = wy.T
+wz = Data['wz']
+wz = wz.T
 
-        # Calling the step function on an Optimizer makes an update to its
-        # parameters
-        optimizer.step()
-        
-        
-        losses["Koopman"]["collocation"].append(loss.item())
-        losses["Koopman"]["num_epochs"].append(epoch)
+## Get desired frontal velocity
+
+vel_control = Data['vel_control']
+vel_control = vel_control.T
+
+h, hp, T = get_odometry(data_odom_blue, steering_real, vx, vy, vz, wx, wy, wz, vel_control, steering_control, 0, 500)
+## Compute sample time of the system
+ts = 0.05
+t = np.zeros((T.shape[1]), dtype = np.double)
+for k in range(0, T.shape[1]-1):
+    t[k+1] = t[k] + ts
 
 
+## Get Data DMD
+X1_n, X2_n, U_n = get_simple_data(h, hp, T)
+n_normal = X1_n.shape[0]
 
+# Koopman Space
+X1 = liftFun(X1_n)
+X2 = liftFun(X2_n)
+U = U_n
+
+A_a = neural_network.A.weight.cpu()
+A_a = A_a.double()
+A_a = A_a.detach().numpy()
+
+B_a = neural_network.B.weight.cpu()
+B_a = B_a.double()
+B_a = B_a.detach().numpy()
+
+C_ones = np.eye(X1.shape[0], dtype = np.double)
+C_zeros = np.zeros((X1.shape[0], n - X1.shape[0]), dtype=np.double)
+C_a = np.hstack((C_ones, C_zeros))
+
+## Plot matrix A
+plt.imshow(A_a)
+plt.colorbar()
+plt.show()
+#
+# Plot matrix B
+plt.imshow(B_a)
+plt.colorbar()
+plt.show()
+#
+# New variables in order to verify the identification
+x_estimate = np.zeros((X1.shape[0], X1.shape[1]+1), dtype=np.double)
+output_estimate = np.zeros((X1.shape[0], U.shape[1]), dtype=np.double)
+output_real = np.zeros((X1.shape[0], U.shape[1]), dtype=np.double)
+error_vector = np.zeros((X1.shape[0], U.shape[1]), dtype=np.double)
+norm_error = np.zeros((1, U.shape[1]), dtype = np.double)
+
+
+# Tensors of the system
+X1_tensor =  torch.tensor(X1).to(device)
+X1_tensor = X1_tensor.double()
+
+X2_tensor =  torch.tensor(X2).to(device)
+X2_tensor = X2_tensor.double()
+
+aux_init = X1_tensor.T
+aux_init = aux_init.unsqueeze(0)
+x_aux_estimate, _ = neural_network.encode(aux_init)
+x_aux_estimate = x_aux_estimate.cpu().double().detach().numpy()
+# Initial value
+x_estimate[:, 0] = C_a@x_aux_estimate[0, 0, :]
+
+for k in range(0, U.shape[1]):
+    output_estimate[:, k] = x_estimate[:, k]
+    
+    output_numpy_pytorch = torch.from_numpy(X1[:, k]).to(device).double()
+    output_numpy_pytorch = torch.reshape(output_numpy_pytorch, (1, 1, X1_tensor.shape[0]))
+    output_aux, _ = neural_network.encode(output_numpy_pytorch)
+    
+    output_aux = output_aux.cpu().double().detach().numpy()
+    output_real[:, k] = C_a@output_aux[0, 0, :]
+
+    error_vector[:, k] = output_real[:, k] - output_estimate[:, k]
+    norm_error[:, k] = np.linalg.norm(error_vector[:, k])
+    
+    # transformation between pytorch an numpy
+    aux_numpy_pytorch = torch.from_numpy(x_estimate[:, k]).to(device).double()
+    aux_numpy_pytorch = torch.reshape(aux_numpy_pytorch, (1, 1, X1_tensor.shape[0]))
+
+    x_aux_estimate, _ = neural_network.encode(aux_numpy_pytorch)
+    x_aux_estimate = x_aux_estimate.cpu().double().detach().numpy()
+    
+    aux_states = x_aux_estimate[0, 0, :]
+    x_estimate[:, k+1] = C_a@(A_a@aux_states + B_a@U[:, k])
+
+print("Error estimation norm")
+print(np.linalg.norm(norm_error))
+eig_A, eigv_A = np.linalg.eig(A_a)
+print("Print Eigvalues A")
+print(eig_A)
+
+fig13, ax13, ax23, ax33 = fancy_plots_3()
+plot_states_angles_estimation(fig13, ax13, ax23, ax33, h[7:10, :], output_estimate[:, :], t, "Euler Angles Of the system")
+plt.show()
+
+fig15, ax15, ax25, ax35 = fancy_plots_3()
+plot_states_velocity_lineal_estimation(fig15, ax15, ax25, ax35, hp[0:3, :], output_estimate[:, :], t, "Lineal Velocity of the system")
+plt.show()
+
+fig16, ax16, ax26, ax36 = fancy_plots_3()
+plot_states_velocity_angular_estimation(fig16, ax16, ax26, ax36, hp[3:6, :], output_estimate[:, :], t, "Angular Velocity of the system")
+plt.show()
+
+fig17, ax17, ax27 = fancy_plots_2()
+plot_control_states_estimation(fig17, ax17, ax27, h[:, :], hp[:, :], output_estimate[:, :], t, "Control and Real Values of the system")
+plt.show()
+
+fig14, ax14, ax24, ax34 = fancy_plots_3()
+plot_states_position_estimation(fig14, ax14, ax24, ax34, h[0:3, :], output_estimate[:, :], t, "Position of the system")
+plt.show()
+
+fig18, ax18 = fancy_plots_1()
+plot_error_estimation(fig18, ax18, norm_error, t, 'Error Norm of the Estimation')
+plt.show()

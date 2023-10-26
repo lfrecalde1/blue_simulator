@@ -3,8 +3,8 @@
 clc, clear all, close all;
 
 %% Load data from the specified file
-load("blue_data_02.mat");
-size = 1500;
+load("blue_data_01.mat");
+size = 1000;
 %% Odometry of the system
 [h, hp, T] = get_odometry(data_odom_blue', steering_real', vel_real', vy', vz', wx', wy', wz', vel_control', steering_control', size);
 
@@ -179,4 +179,4 @@ title('$\textrm{Angular Velocities System}$','Interpreter','latex','FontSize',9)
 ylabel('$[rad]$','Interpreter','latex','FontSize',9);
 
 %% Save Data of the system
-save("Data_System.mat","T", "h", "hp")
+save("Data_System_1.mat","T", "h", "hp")

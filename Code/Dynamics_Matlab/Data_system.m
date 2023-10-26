@@ -4,7 +4,7 @@ clc, clear all, close all;
 
 %% Load data from the specified file
 load("blue_data_02.mat");
-size = 800;
+size = 1500;
 %% Odometry of the system
 [h, hp, T] = get_odometry(data_odom_blue', steering_real', vel_real', vy', vz', wx', wy', wz', vel_control', steering_control', size);
 

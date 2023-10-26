@@ -33,14 +33,16 @@ for k = 1:length(U)
     
 end
 %% Optimization Problem
-obj = beta*norm(he_koop, 2)^2 + alpha*norm(A, 'fro') + alpha*norm(B, 'fro')  + 1*norm(he_prediction, 2)^2;
+obj = beta*norm(he_koop, 2);
+%obj = beta*norm(he_koop, 'fro');
+
 %% General Vector Optimziation Variables
 OPT_variables = [reshape(A,size(A,1)*size(A,2),1);reshape(B,size(B,1)*size(B,2),1)];
 
 nlprob = struct('f', obj, 'x', OPT_variables);
 % 
 opts = struct;
-opts.ipopt.max_iter = 10;
+opts.ipopt.max_iter = 20;
 opts.ipopt.acceptable_tol =1e-8;
 opts.ipopt.acceptable_obj_change_tol = 1e-6;
 

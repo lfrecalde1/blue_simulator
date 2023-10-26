@@ -3,10 +3,10 @@
 clc, clear all, close all;
 
 %% Load data from the specified file
-load("blue_data_02.mat");
-size = 800;
+load("blue_data_01.mat");
+size = 500;
 %% Odometry of the system
-[h, hp, T] = get_odometry(data_odom_blue', steering_real', vel_real', vy', vz', wx', wy', wz', vel_control', steering_control', size);
+[h, hp] = get_odometry(data_odom_blue', steering_real', vx', vy', vz', wx', wy', wz', vel size);
 
 %% Angular Velocities of the sytem
 p = hp(4, :); 
@@ -14,6 +14,13 @@ q = hp(5, :);
 r = hp(6, :);
 
 %% Control Signals
+
+
+%% Get Data
+desface = 0;
+h = h(:, 1:end-desface);
+hp = hp(:, 1:end-desface);
+T = T(:, 1:end-desface);
 %% Plot Euler Angles of the system
 figure
 set(gcf, 'PaperUnits', 'inches');

@@ -5,20 +5,25 @@ clc, clear all, close all;
 load("Data_System_2.mat");
 [Data_1_X_k, Data_1_X_1, Data_1_U_1] = get_data_simple(h, hp, T);
 
+load("Data_System_3.mat");
+[Data_2_X_k, Data_2_X_1, Data_2_U_1] = get_data_simple(h, hp, T);
+
 %% Rearrange data in order to develp DMD ext
 %% State K
-X1 = [Data_1_X_1];
+X1 = [Data_1_X_1, Data_2_X_1];
 
 %% State K+1
-X2 = [Data_1_X_k];
+X2 = [Data_1_X_k, Data_2_X_k];
 n_normal = size(X1,1);
 %% Input K
-Gamma = [Data_1_U_1];
+Gamma = [Data_1_U_1, Data_2_U_1];
 % Gamma = Gamma./max(abs(Gamma), [], 2);
 l = 1.1;
 liftFun = @(xx)([
                  xx;...
-
+                  tan(xx(3, :));...
+                  tan(xx(3, :)).*xx(4, :);...
+                  
                   sin(xx(3, :)).*xx(4, :);...
                   cos(xx(3, :)).*xx(4, :);...
                   
@@ -44,7 +49,7 @@ beta = 1;
 C_a = [eye(n_normal,n_normal), zeros(n_normal, n-n_normal)];
 
 %% Load Data System
-load("Data_System_1.mat");
+load("Data_System_3.mat");
 [Data_1_X_k, Data_1_X_1, Data_1_U_1] = get_data_simple(h, hp, T);
 
 %% Rearrange data in order to develp DMD ext
@@ -104,7 +109,7 @@ set(gcf, 'PaperPosition', [0 0 10 4]);
 subplot(3,1,1)
 plot(salida_real(2,1:length(X2)-1),'-','Color',[226,76,44]/255,'linewidth',1); hold on
 grid on;
-plot(salida_es(2,1:length(X2)-1),'--','Color',[100,76,10]/255,'linewidth',1); hold on
+%plot(salida_es(2,1:length(X2)-1),'--','Color',[100,76,10]/255,'linewidth',1); hold on
 plot(salida_es_2(2,1:length(X2)-1),'-.','Color',[50,76,10]/255,'linewidth',1); hold on
 legend({'${\omega}$','$\hat{\omega}$', '$\hat{\omega_2}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
 legend('boxoff')
@@ -114,7 +119,7 @@ set(gcf, 'Color', 'w'); % Sets axes background
 subplot(3,1,2)
 plot(salida_real(3,1:length(X2)-1),'-','Color',[226,76,44]/255,'linewidth',1); hold on
 grid on;
-plot(salida_es(3,1:length(X2)-1),'--','Color',[100,76,10]/255,'linewidth',1); hold on
+%plot(salida_es(3,1:length(X2)-1),'--','Color',[100,76,10]/255,'linewidth',1); hold on
 plot(salida_es_2(3,1:length(X2)-1),'-.','Color',[50,76,10]/255,'linewidth',1); hold on
 
 legend({'${\alpha}$','$\hat{\alpha}$','$\hat{\alpha_2}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
@@ -124,7 +129,7 @@ ylabel('$[rad]$','Interpreter','latex','FontSize',9);
 subplot(3,1,3)
 plot(salida_real(1,1:length(X2)-1),'-','Color',[226,76,44]/255,'linewidth',1); hold on
 grid on;
-plot(salida_es(1,1:length(X2)-1),'--','Color',[100,76,10]/255,'linewidth',1); hold on
+%plot(salida_es(1,1:length(X2)-1),'--','Color',[100,76,10]/255,'linewidth',1); hold on
 plot(salida_es_2(1,1:length(X2)-1),'-.','Color',[50,76,10]/255,'linewidth',1); hold on
 legend({'${\psi}$','$\hat{\psi}$' ,'$\hat{\psi_2}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
 legend('boxoff')
@@ -138,7 +143,7 @@ set(gcf, 'PaperPositionMode', 'manual');
 set(gcf, 'PaperPosition', [0 0 10 4]);
 subplot(2,1,1)
 plot(salida_real(4,1:length(X2)-1),'-','Color',[226,76,44]/255,'linewidth',1); hold on
-plot(salida_es(4,1:length(X2)-1),'--','Color',[100,76,10]/255,'linewidth',1); hold on
+%plot(salida_es(4,1:length(X2)-1),'--','Color',[100,76,10]/255,'linewidth',1); hold on
 plot(salida_es_2(4,1:length(X2)-1),'-.','Color',[50,76,10]/255,'linewidth',1); hold on
 grid on;
 legend({'${{\mu_l}}$','${\hat{\mu_l}}$','${\hat{\mu_{l2}}}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
@@ -164,7 +169,7 @@ set(gcf, 'PaperPositionMode', 'manual');
 set(gcf, 'PaperPosition', [0 0 10 4]);
 subplot(2,1,1)
 plot(salida_real(5,1:length(X2)-1),'-','Color',[226,76,44]/255,'linewidth',1); hold on
-plot(salida_es(5,1:length(X2)-1),'--','Color',[100,76,10]/255,'linewidth',1); hold on
+%plot(salida_es(5,1:length(X2)-1),'--','Color',[100,76,10]/255,'linewidth',1); hold on
 plot(salida_es_2(5,1:length(X2)-1),'-.','Color',[50,76,10]/255,'linewidth',1); hold on
 grid on;
 legend({'${{x}}$','${\hat{x}}$','${\hat{x_2}}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
@@ -175,7 +180,7 @@ ylabel('$[m]$','Interpreter','latex','FontSize',9);
 subplot(2,1,2)
 plot(salida_real(6,1:length(X2)-1),'-','Color',[226,76,44]/255,'linewidth',1); hold on
 grid on;
-plot(salida_es(6,1:length(X2)-1),'--','Color',[100,76,10]/255,'linewidth',1); hold on
+%plot(salida_es(6,1:length(X2)-1),'--','Color',[100,76,10]/255,'linewidth',1); hold on
 plot(salida_es_2(6,1:length(X2)-1),'-.','Color',[50,76,10]/255,'linewidth',1); hold on
 
 legend({'${y}$','${\hat{y}}$','${\hat{y_2}}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
@@ -191,7 +196,7 @@ set(gcf, 'PaperSize', [4 2]);
 set(gcf, 'PaperPositionMode', 'manual');
 set(gcf, 'PaperPosition', [0 0 10 4]);
 subplot(1,1,1)
-plot(norm_error(1,1:length(X2)-1),'-','Color',[226,76,44]/255,'linewidth',1); hold on
+%plot(norm_error(1,1:length(X2)-1),'-','Color',[226,76,44]/255,'linewidth',1); hold on
 plot(norm_error_2(1,1:length(X2)-1),'--','Color',[100,76,44]/255,'linewidth',1); hold on
 grid on;
 legend({'$||e_{estimation}||$', '$||e_{estimation2}||$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');

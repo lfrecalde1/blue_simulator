@@ -1,20 +1,20 @@
 %% Load Data System
 clc, clear all, close all;
 
-load("Data_System_2.mat");
+load("Data_System_3.mat");
 load("A_data.mat");
 load("B_data.mat");
 [Data_1_X_k, Data_1_X_1, Data_1_U_1] = get_data_simple(h, hp, T);
 
 %% Rearrange data in order to develp DMD ext
 %% State K
-X1 = [Data_1_X_1(:, 1:100)];
+X1 = [Data_1_X_1(:, 500)];
 
 %% State K+1
-X2 = [Data_1_X_k(:, 1:100)];
+X2 = [Data_1_X_k(:, 500)];
 n_normal = size(X1,1);
 %% Input K
-Gamma = [Data_1_U_1(:, 1:100)];
+Gamma = [Data_1_U_1(:, 500)];
 
 liftFun = @(xx)([
                  xx;...
@@ -43,7 +43,7 @@ C_a = [eye(n_normal,n_normal), zeros(n_normal, n-n_normal)];
 
 %% Initial Conditions System
 v_estimate(:, 1) = C_a*(X1(:, 1));
-for k= 1:100-1
+for k= 1:500
     %% Output of the system
     salida_es(:, k) = v_estimate(:, k);
     
@@ -146,7 +146,7 @@ title('$\textrm{Error estimation}$','Interpreter','latex','FontSize',9);
 
 figure
 imagesc(A_a);
-eig_v = eig(A_a)
+eig(A_a)
 figure
 imagesc(B_a);
 

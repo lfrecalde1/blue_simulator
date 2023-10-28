@@ -1,4 +1,4 @@
-function [A_final, B_final,P] = funcion_costo_koopman_csadi(X_1, X_K, U, alpha, beta, n, m, n_normal)
+function [A_final, B_final] = funcion_costo_koopman_csadi_linear(X_1, X_K, U, alpha, beta, n, m, n_normal, h)
 %% Load Casadi to the path of matlab 
 addpath('/home/fer/casadi-linux-matlabR2014b-v3.4.5');
 import casadi.*;
@@ -12,7 +12,7 @@ A = MX.sym('A', n, n);
 B = MX.sym('B', n, m);
 C_a = [eye(n_normal,n_normal), zeros(n_normal, n - n_normal)];
 
-p = 1;
+
 for k = 1:length(U)
 
     %% Minimization Koopman
@@ -22,22 +22,22 @@ for k = 1:length(U)
 
     Gamma_k = (X_K(:,k));
     Gamma_1 = (X_1(:,k));
-
     
-    error_koop = Gamma_k  -A*Gamma_1 - B*U(:,k);
-    error_prediction = x_k - C_a*(A*Gamma_1 + B*U(:, k)) ;
-    aux_p(1, k) = p^(length(U)-k);
-    %obj = obj + (p)^(length(U)-k)*norm(error_koop);
+    Rotacion = [1, 0, cos(h(10, k)), -sin(h(10, k));...
+        0, 1, sin(h(10, k)), cos(h(10, k));...
+        0, 0, 1, 0;...
+        0, 0, 0, 1];
+    
+    error_koop = Gamma_k  -A*Rotacion*Gamma_1 - B*U(:,k);
+    
+    error_prediction = x_k - C_a*(A*Rotacion*Gamma_1 + B*U(:, k)) ;
     %% Error Vector
     he_koop = [he_koop; error_koop];
     he_prediction = [he_prediction; error_prediction];
     
 end
 %% Optimization Problem
-P = diag(aux_p);
-he_koop = reshape(he_koop, size(X_1, 1), size(X_1, 2));
-he_koop = he_koop*P;
-obj = 1*norm(he_koop, 'fro');
+obj = beta*norm(he_koop, 2);
 %obj = beta*norm(he_koop, 'fro');
 
 %% General Vector Optimziation Variables

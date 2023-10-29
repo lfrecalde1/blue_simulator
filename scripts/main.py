@@ -5,25 +5,37 @@ import rospy
 import numpy as np
 from blue_simulator.blue_robot import BlueRobot
 from nav_msgs.msg import Odometry
+from geometry_msgs.msg import Twist
 
 # Global Variable desired Initial Position
-xd = 0.481201
-yd = -0.0684486
-zd = 1.3859978
+x_i = 0.481201
+y_i = -0.0684486
+z_i = 1.3859978
 
-qxd = 0.0005
-qyd = 0.0
-qzd = 0.0
-qwd = 1.0
+qx_i = 0.0005
+qy_i = 0.0
+qz_i = 0.0
+qw_i = 1.0
 
+vx_i = 0.0
+vy_i = 0.0
+vz_i = 0.0
+
+wx_i = 0.0
+wy_i = 0.0
+wz_i = 0.0
+
+# Desired and control velocities.
+# Linear Velocity and steer angle
 vxd = 0.0
-vyd = 0.0
-vzd = 0.0
-
-wxd = 0.0
-wyd = 0.0
 wzd = 0.0
 
+def velocity_call_back(velocity_message):
+    global vxd, wzd
+    # Read the linear Velocities
+    vxd = velocity_message.linear.x
+    wzd = velocity_message.angular.z
+    return None
 
 def main(robot, odom_pub):
     # Get time step Simulation
@@ -43,8 +55,8 @@ def main(robot, odom_pub):
     rospy.loginfo_once("Blue Robot Simulation")
 
     # Define Initial Conditions of the System
-    initial_pose = np.array([xd, yd, zd, qxd, qyd, qzd, qwd], dtype=np.double)
-    initial_velocity = np.array([vxd, vyd, vzd, wxd, wyd, wzd], dtype=np.double)
+    initial_pose = np.array([x_i, y_i, z_i, qx_i, qy_i, qz_i, qw_i], dtype=np.double)
+    initial_velocity = np.array([vx_i, vy_i, vz_i, wx_i, wy_i, wz_i], dtype=np.double)
 
     # Variables of the Robot, wheel radious and more
     # Distance between axis
@@ -73,15 +85,18 @@ def main(robot, odom_pub):
     message_ros = "Blue Robot Simulation Webots"
     # Simulation Loop
     while robot.step(time_step) != -1:
-        signal = 0.45*np.sin(4*t)
         tic = rospy.get_time()
-        blue_1.set_motors_velocity(0.5, 0.5)
-        blue_1.set_steer_angle(signal)
-
+        # Move robot based on desired frontal velocity and steer angle
+        blue_1.set_frontal_velocity(vxd)
+        blue_1.set_steer_angle(wzd)
 
 
         # Time restriction Correct
         loop_rate.sleep()
+        # Send Odometry
+        blue_1.send_odometry(odom_pub)
+
+        # Print Time Verification
         toc = rospy.get_time()
         delta = toc - tic
         rospy.loginfo(message_ros + str(delta))
@@ -99,6 +114,9 @@ if __name__ == '__main__':
         odomety_topic = "/blue_robot/odom"
         odometry_publisher = rospy.Publisher(odomety_topic, Odometry, queue_size = 10)
 
+        # Subscribe Info
+        velocity_topic = "/blue_robot/cmd_vel"
+        velocity_subscriber = rospy.Subscriber(velocity_topic, Twist, velocity_call_back)
 
         main(robot, odometry_publisher)
 

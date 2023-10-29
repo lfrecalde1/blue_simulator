@@ -15,8 +15,8 @@ WorldInfo {
   ]
 }
 Viewpoint {
-  orientation -0.2263502326585613 0.5196204893669898 0.8238689939580354 0.9727380195598786
-  position -0.9437285445107055 -3.2491140610711735 2.6264152791003794
+  orientation -0.2615138878797314 0.6003438688809399 0.7557762403933402 1.0457266730532297
+  position -1.777225405578783 -3.5509195911838654 3.5196164702592756
 }
 TexturedBackground {
 }
@@ -26,9 +26,12 @@ Floor {
   size 20 20
 }
 DEF Blue Robot {
-  translation 0.4866842354899648 -0.06843381152318878 0.3847742831576445
-  rotation -2.3000834100345637e-05 -0.15457925825940622 -0.9879803906894778 0.006604219566263449
+  translation 0.5623768383185123 -0.0648932594599804 0.3846689980979289
+  rotation 0.002152211150184966 -0.1501211862270752 0.9886652605573542 0.009057829653497206
   children [
+    InertialUnit {
+      noise 0.0001
+    }
     DEF lidar_location Transform {
       translation 0.44 0 0.65
       children [
@@ -70,7 +73,7 @@ DEF Blue Robot {
       children [
         DEF RIGHT_REAR_WHEEL_HINGE HingeJoint {
           jointParameters HingeJointParameters {
-            position 2.003449904352445
+            position 2.433979583662189
             dampingConstant 5
             suspensionAxis 0 0 1
           }
@@ -94,7 +97,7 @@ DEF Blue Robot {
             endPoint Slot {
               type "vehicle wheel"
               endPoint Solid {
-                rotation 1 0 0 0.006577050797909267
+                rotation 1 0 0 0.4371067301076433
                 children [
                   Transform {
                     translation 0.05 0 0
@@ -191,8 +194,8 @@ DEF Blue Robot {
                   density -1
                   mass 30
                 }
-                linearVelocity -0.0026770161864588023 0.00014138160086261118 0.0011218750801861273
-                angularVelocity -0.0002495008324975318 -0.015936504343089866 -0.000202821312521036
+                linearVelocity 1.320465860133962e-09 -1.8589545059899114e-11 2.316014159882525e-15
+                angularVelocity -4.220466016640209e-12 4.721458058133519e-10 5.672954156007273e-11
               }
             }
           }
@@ -206,7 +209,7 @@ DEF Blue Robot {
       children [
         DEF LEFT_REAR_WHEEL_HINGE HingeJoint {
           jointParameters HingeJointParameters {
-            position 8.777329163898965
+            position 9.20728739979798
             axis -1 0 0
             dampingConstant 5
             suspensionAxis 0 0 1
@@ -231,7 +234,7 @@ DEF Blue Robot {
             endPoint Slot {
               type "vehicle wheel"
               endPoint Solid {
-                rotation -0.9999999999999999 0 0 0.006492873237238813
+                rotation -1 0 0 0.43645110913625523
                 children [
                   Transform {
                     translation 0.05 0 0
@@ -328,8 +331,8 @@ DEF Blue Robot {
                   density -1
                   mass 30
                 }
-                linearVelocity -0.0024520455887580665 0.00014006509943691525 0.001012583743394668
-                angularVelocity -0.00022346982510616223 -0.011925801532925578 -0.00020287185120797737
+                linearVelocity 1.2771105229927901e-09 -1.8976431264071707e-11 -1.9839394869393125e-15
+                angularVelocity -4.095587621226646e-12 4.566471633048276e-10 5.672835697524482e-11
               }
             }
           }
@@ -343,12 +346,13 @@ DEF Blue Robot {
       children [
         DEF LEFT_STEER_HINGE2 Hinge2Joint {
           jointParameters HingeJointParameters {
-            position -1.4999099970372522e-05
+            position -3.216149283731743e-09
             axis 0 0 -1
+            dampingConstant 5
             suspensionAxis 0 0 1
           }
           jointParameters2 JointParameters {
-            position 22.959555084264736
+            position 23.259588221017246
             axis -1 0 0
             dampingConstant 5
           }
@@ -384,7 +388,7 @@ DEF Blue Robot {
             endPoint Slot {
               type "vehicle wheel"
               endPoint Solid {
-                rotation -0.9999999998839841 -1.4982587227370976e-05 2.748414635680688e-06 0.012016049897385197
+                rotation -0.9999999988409852 -7.484645308897098e-06 -4.75605913006596e-05 0.3120491870056506
                 children [
                   Transform {
                     translation 0.041 0 0
@@ -476,8 +480,8 @@ DEF Blue Robot {
                   density -1
                   mass 10
                 }
-                linearVelocity -0.0025578493011065417 -5.7979323886627474e-05 -0.0009475643612728453
-                angularVelocity -0.0002508314757791558 -0.016817796778891073 -0.00020323114222241492
+                linearVelocity 1.2790181806203046e-09 4.2018006341741056e-11 -3.3764535998988244e-16
+                angularVelocity -1.405359699264725e-10 1.5701020801260864e-08 5.69254514286674e-11
               }
             }
           }
@@ -491,12 +495,13 @@ DEF Blue Robot {
       children [
         DEF RIGHT_STEER_HINGE2 Hinge2Joint {
           jointParameters HingeJointParameters {
-            position 1.7988883863582812e-05
+            position 3.221402522306087e-09
             axis 0 0 -1
+            dampingConstant 5
             suspensionAxis 0 0 1
           }
           jointParameters2 JointParameters {
-            position 20.720074604696723
+            position 20.979591421894316
             axis 1 0 0
             dampingConstant 5
           }
@@ -529,7 +534,7 @@ DEF Blue Robot {
             endPoint Slot {
               type "vehicle wheel"
               endPoint Solid {
-                rotation 0.9999999998382042 -1.798859492607712e-05 -4.783078895802354e-08 0.012081465831989425
+                rotation 0.9999999977939369 -8.995763676919702e-06 6.581187272274299e-05 0.27159828362140626
                 children [
                   Transform {
                     translation 0.041 0 0
@@ -621,8 +626,8 @@ DEF Blue Robot {
                   density -1
                   mass 10
                 }
-                linearVelocity -0.0026955580602239524 -5.662421873247445e-05 -0.0008505124440967139
-                angularVelocity -0.0002572007377372944 -0.017723712978605928 -0.00020322490384794278
+                linearVelocity 1.3174824613896031e-09 4.2363505031104185e-11 1.0732538095963171e-15
+                angularVelocity -1.5716538174353324e-10 1.7543790243530328e-08 5.69664233596184e-11
               }
             }
           }
@@ -1053,10 +1058,10 @@ DEF Blue Robot {
   }
   controller "<extern>"
   supervisor TRUE
-  linearVelocity -0.0024029963625055812 9.352676235223222e-05 0.0004244831882635942
-  angularVelocity -0.00013139462621327498 0.001826786622631918 -0.00020311023171814375
+  linearVelocity 1.29861991401027e-09 1.113374001591118e-12 -2.3053936568411685e-15
+  angularVelocity 2.041160263315058e-15 5.635218200132905e-15 5.6721355504304567e-11
 }
 Ball {
-  translation 0.658914022407109 -0.6312148941518613 0.03245683600000001
-  rotation 2.1144922308618142e-13 -8.459682384546798e-13 -1 1.1626964291316326
+  translation 0.6589140224071313 -0.6312148941518613 0.03245683600000001
+  rotation -1.314024666654966e-13 -3.242010621472495e-13 -1 1.1626964291316326
 }

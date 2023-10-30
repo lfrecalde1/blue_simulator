@@ -51,3 +51,24 @@ To run the simulator, execute the following command:
 ```bash
 roslaunch blue_simulator simulator_webots.launch
 ```
+
+## Docker
+To facilitate the installation and use of the simulator, it can be built with a docker with the following instructions
+### Clone the repository
+```
+mkdir ~/webot-blue
+cd ~/webot-blue/
+git clone https://github.com/lfrecalde1/blue_simulator.git
+cd ~/webot-blue/blue_simulator
+```
+### Build the docker image
+```
+sudo docker build -t webots-blue . 
+```
+### Run the container
+```
+sudo docker run --shm-size=1g --ulimit memlock=-1 --ulimit stack=67108864 --rm -it --net=host -e DISPLAY=$DISPLAY --user=$(id -u $USER):$(id -g $USER) --name webots-blue-container --gpus all --cpuset-cpus="0-2" webots-blue
+```
+### Note: 
+- The docker image is based from nvidia/cuda:11.8.0-base-ubuntu20.04. It also has Webots R2023a and ROS Noetic.
+- When launching the container, it is specified that all graphics and 3 cpu cores will be used.

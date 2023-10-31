@@ -1,0 +1,7 @@
+sudo apt update
+sudo apt upgrade
+sudo apt install curl
+
+curl -fsSL get.docker.com -o get-docker.sh
+
+sudo sh get-docker.sh

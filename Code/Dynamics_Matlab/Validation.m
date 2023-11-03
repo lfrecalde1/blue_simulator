@@ -1,62 +1,41 @@
 %% Load Data System
 clc, clear all, close all;
 
-load("Data_System_2.mat");
-% load("A_data.mat");
-% load("B_data.mat");
-load("matrices.mat");
-[Data_1_X_k, Data_1_X_1, Data_1_U_1] = get_data_simple(h, hp, T);
+%% Initial Conditions System
+load("Data_System_1.mat");
+load("matrices.mat")
+[Data_2_X_k, Data_2_X_1, Data_2_U_1] = get_data_simple(h, hp, T);
 
-%% Rearrange data in order to develp DMD ext
-%% State K
-X1 = [Data_1_X_1(:, 1:100)];
-
-%% State K+1
-X2 = [Data_1_X_k(:, 1:100)];
+X1 = [Data_2_X_1];
+X2 = [Data_2_X_k];
 n_normal = size(X1,1);
-%% Input K
-Gamma = [Data_1_U_1(:, 1:100)];
+Gamma = [Data_2_U_1];
 
-liftFun = @(xx)([
-                xx;...
-                  
-                  tan(xx(3, :)).*xx(4, :);...
-                  
-                  sin(xx(3, :)).*xx(4, :);...
-                  cos(xx(3, :)).*xx(4, :);...
-                  
-                  sin(xx(1, :)).*xx(4, :);...
-                  cos(xx(1, :)).*xx(4, :);...
-                  ]);
-
-%% Lifdted space system
 X1 = liftFun(X1);
-
-%% State K+1
 X2 = liftFun(X2);
 
-%% Size system 
 n = size(X2, 1);
 m = size(Gamma, 1);
 
-%% Output Matrix
 C_a = [eye(n_normal,n_normal), zeros(n_normal, n-n_normal)];
-
-%% Initial Conditions System
 v_estimate(:, 1) = C_a*(X1(:, 1));
-for k= 1:100-1
+for k= 1:length(X1)
     %% Output of the system
     salida_es(:, k) = v_estimate(:, k);
+    rot_es(:, :, k) = reshape(v_estimate(1:9, k), 3, 3);
+    angles_est(: , k) =  get_angles(rot_es(:, :, k));
     
     Gamma_real = (X1(:, k));
     salida_real(:, k) = C_a*Gamma_real;
+    rot_real(:, :, k) = reshape(salida_real(1:9, k), 3, 3);
+    angles_real(: , k) =  get_angles(rot_real(:, :, k));
     
     %% Error of the estimation
     error(:, k) = salida_real(:,k) - salida_es(:, k);
     norm_error(k) = norm(error(:, k), 2);
 
     %% Evolution of the system
-    v_estimate(:, k+1) = C_a*(A_SUB*liftFun(v_estimate(:, k)) + B_SUB*Gamma(:, k));
+    v_estimate(:, k+1) = C_a*(A_a*liftFun_v(v_estimate(:, k)) + B_a*Gamma(:, k));
     
 end
 
@@ -66,72 +45,117 @@ set(gcf, 'PaperSize', [4 2]);
 set(gcf, 'PaperPositionMode', 'manual');
 set(gcf, 'PaperPosition', [0 0 10 4]);
 
-subplot(3,1,1)
-plot(salida_real(2,1:length(X2)-1),'-','Color',[226,76,44]/255,'linewidth',1); hold on
+subplot(2,1,1)
+plot(salida_real(12,1:length(X2)-1),'-','Color',[226,76,44]/255,'linewidth',1); hold on
 grid on;
-plot(salida_es(2,1:length(X2)-1),'--','Color',[100,76,10]/255,'linewidth',1); hold on
-legend({'${\omega}$','$\hat{\omega}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
+plot(salida_es(12,1:length(X2)-1),'--','Color',[100,76,10]/255,'linewidth',1); hold on
+legend({'${r}$','$\hat{r}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
 legend('boxoff')
 ylabel('$[rad/s]$','Interpreter','latex','FontSize',9);
 set(gcf, 'Color', 'w'); % Sets axes background
 
-subplot(3,1,2)
-plot(salida_real(3,1:length(X2)-1),'-','Color',[226,76,44]/255,'linewidth',1); hold on
-grid on;
-plot(salida_es(3,1:length(X2)-1),'--','Color',[100,76,10]/255,'linewidth',1); hold on
-legend({'${\alpha}$','$\hat{\alpha}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
-legend('boxoff')
-ylabel('$[rad]$','Interpreter','latex','FontSize',9);
 
-subplot(3,1,3)
-plot(salida_real(1,1:length(X2)-1),'-','Color',[226,76,44]/255,'linewidth',1); hold on
+subplot(2,1,2)
+plot(angles_real(3,1:length(X2)-1),'-','Color',[226,76,44]/255,'linewidth',1); hold on
 grid on;
-plot(salida_es(1,1:length(X2)-1),'--','Color',[100,76,10]/255,'linewidth',1); hold on
+plot(angles_est(3,1:length(X2)-1),'--','Color',[100,76,10]/255,'linewidth',1); hold on
 legend({'${\psi}$','$\hat{\psi}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
 legend('boxoff')
 ylabel('$[rad]$','Interpreter','latex','FontSize',9);
 
-
 figure
 set(gcf, 'PaperUnits', 'inches');
 set(gcf, 'PaperSize', [4 2]);
 set(gcf, 'PaperPositionMode', 'manual');
 set(gcf, 'PaperPosition', [0 0 10 4]);
+
 subplot(2,1,1)
-plot(salida_real(4,1:length(X2)-1),'-','Color',[226,76,44]/255,'linewidth',1); hold on
-plot(salida_es(4,1:length(X2)-1),'--','Color',[100,76,10]/255,'linewidth',1); hold on
+plot(salida_real(10,1:length(X2)-1),'-','Color',[226,76,44]/255,'linewidth',1); hold on
 grid on;
-legend({'${{\mu_l}}$','${\hat{\mu_l}}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
+plot(salida_es(10,1:length(X2)-1),'--','Color',[100,76,10]/255,'linewidth',1); hold on
+legend({'${p}$','$\hat{p}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
 legend('boxoff')
-title('$\textrm{Estimation}$','Interpreter','latex','FontSize',9);
-ylabel('$[m/]$','Interpreter','latex','FontSize',9);
-
-
-
-figure
-set(gcf, 'PaperUnits', 'inches');
-set(gcf, 'PaperSize', [4 2]);
-set(gcf, 'PaperPositionMode', 'manual');
-set(gcf, 'PaperPosition', [0 0 10 4]);
-subplot(2,1,1)
-plot(salida_real(5,1:length(X2)-1),'-','Color',[226,76,44]/255,'linewidth',1); hold on
-plot(salida_es(5,1:length(X2)-1),'--','Color',[100,76,10]/255,'linewidth',1); hold on
-grid on;
-legend({'${{x}}$','${\hat{x}}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
-legend('boxoff')
-title('$\textrm{Estimation}$','Interpreter','latex','FontSize',9);
-ylabel('$[m]$','Interpreter','latex','FontSize',9);
-
-subplot(2,1,2)
-plot(salida_real(6,1:length(X2)-1),'-','Color',[226,76,44]/255,'linewidth',1); hold on
-grid on;
-plot(salida_es(6,1:length(X2)-1),'--','Color',[100,76,10]/255,'linewidth',1); hold on
-legend({'${y}$','${\hat{y}}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
-legend('boxoff')
-ylabel('$[m]$','Interpreter','latex','FontSize',9);
+ylabel('$[rad/s]$','Interpreter','latex','FontSize',9);
 set(gcf, 'Color', 'w'); % Sets axes background
 
 
+subplot(2,1,2)
+plot(angles_real(1,1:length(X2)-1),'-','Color',[226,76,44]/255,'linewidth',1); hold on
+grid on;
+plot(angles_est(1,1:length(X2)-1),'--','Color',[100,76,10]/255,'linewidth',1); hold on
+legend({'${\phi}$','$\hat{\phi}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
+legend('boxoff')
+ylabel('$[rad]$','Interpreter','latex','FontSize',9);
+
+figure
+set(gcf, 'PaperUnits', 'inches');
+set(gcf, 'PaperSize', [4 2]);
+set(gcf, 'PaperPositionMode', 'manual');
+set(gcf, 'PaperPosition', [0 0 10 4]);
+
+subplot(2,1,1)
+plot(salida_real(11,1:length(X2)-1),'-','Color',[226,76,44]/255,'linewidth',1); hold on
+grid on;
+plot(salida_es(11,1:length(X2)-1),'--','Color',[100,76,10]/255,'linewidth',1); hold on
+legend({'${q}$','$\hat{q}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
+legend('boxoff')
+ylabel('$[rad/s]$','Interpreter','latex','FontSize',9);
+set(gcf, 'Color', 'w'); % Sets axes background
+
+
+subplot(2,1,2)
+plot(angles_real(2,1:length(X2)-1),'-','Color',[226,76,44]/255,'linewidth',1); hold on
+grid on;
+plot(angles_est(2,1:length(X2)-1),'--','Color',[100,76,10]/255,'linewidth',1); hold on
+legend({'${\theta}$','$\hat{\theta}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
+legend('boxoff')
+ylabel('$[rad]$','Interpreter','latex','FontSize',9);
+
+figure
+set(gcf, 'PaperUnits', 'inches');
+set(gcf, 'PaperSize', [4 2]);
+set(gcf, 'PaperPositionMode', 'manual');
+set(gcf, 'PaperPosition', [0 0 10 4]);
+
+subplot(1,1,1)
+plot(salida_real(13,1:length(X2)-1),'-','Color',[226,76,44]/255,'linewidth',1); hold on
+grid on;
+plot(salida_es(13,1:length(X2)-1),'--','Color',[100,76,10]/255,'linewidth',1); hold on
+legend({'${\alpha}$','$\hat{\alpha}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
+legend('boxoff')
+ylabel('$[rad]$','Interpreter','latex','FontSize',9);
+set(gcf, 'Color', 'w'); % Sets axes background
+
+figure
+set(gcf, 'PaperUnits', 'inches');
+set(gcf, 'PaperSize', [4 2]);
+set(gcf, 'PaperPositionMode', 'manual');
+set(gcf, 'PaperPosition', [0 0 10 4]);
+
+subplot(1,1,1)
+plot(salida_real(14,1:length(X2)-1),'-','Color',[226,76,44]/255,'linewidth',1); hold on
+grid on;
+plot(salida_es(14,1:length(X2)-1),'--','Color',[100,76,10]/255,'linewidth',1); hold on
+legend({'${v_x}$','$\hat{v_x}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
+legend('boxoff')
+ylabel('$[m/s]$','Interpreter','latex','FontSize',9);
+set(gcf, 'Color', 'w'); % Sets axes background
+
+
+figure
+set(gcf, 'PaperUnits', 'inches');
+set(gcf, 'PaperSize', [4 2]);
+set(gcf, 'PaperPositionMode', 'manual');
+set(gcf, 'PaperPosition', [0 0 10 4]);
+
+subplot(1,1,1)
+plot(salida_real(15,1:length(X2)-1),'-','Color',[226,76,44]/255,'linewidth',1); hold on
+grid on;
+plot(salida_es(15,1:length(X2)-1),'--','Color',[100,76,10]/255,'linewidth',1); hold on
+legend({'${v_y}$','$\hat{v_y}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
+legend('boxoff')
+ylabel('$[m/s]$','Interpreter','latex','FontSize',9);
+set(gcf, 'Color', 'w'); % Sets axes background
 
 figure
 set(gcf, 'PaperUnits', 'inches');
@@ -147,10 +171,10 @@ title('$\textrm{Error estimation}$','Interpreter','latex','FontSize',9);
 
 figure
 imagesc(A_a);
-eig_v = eig(A_a)
+eig_v = eig(A_a);
 figure
 imagesc(B_a);
 
-%% Error
+
 disp('Error normal estimation')
 norm(error)

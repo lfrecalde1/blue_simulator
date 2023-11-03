@@ -2,8 +2,9 @@
 clc, clear all, close all;
 
 load("Data_System_2.mat");
-load("A_data.mat");
-load("B_data.mat");
+% load("A_data.mat");
+% load("B_data.mat");
+load("matrices.mat");
 [Data_1_X_k, Data_1_X_1, Data_1_U_1] = get_data_simple(h, hp, T);
 
 %% Rearrange data in order to develp DMD ext
@@ -17,8 +18,8 @@ n_normal = size(X1,1);
 Gamma = [Data_1_U_1(:, 1:100)];
 
 liftFun = @(xx)([
-                 xx;...
-                  tan(xx(3, :));...
+                xx;...
+                  
                   tan(xx(3, :)).*xx(4, :);...
                   
                   sin(xx(3, :)).*xx(4, :);...
@@ -55,7 +56,7 @@ for k= 1:100-1
     norm_error(k) = norm(error(:, k), 2);
 
     %% Evolution of the system
-    v_estimate(:, k+1) = C_a*(A_a*liftFun(v_estimate(:, k)) + B_a*Gamma(:, k));
+    v_estimate(:, k+1) = C_a*(A_SUB*liftFun(v_estimate(:, k)) + B_SUB*Gamma(:, k));
     
 end
 

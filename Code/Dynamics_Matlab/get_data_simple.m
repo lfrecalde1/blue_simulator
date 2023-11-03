@@ -2,13 +2,20 @@ function [X2, X1, Gamma] = get_data_simple(h, hp, u_ref)
 %UNTITLED6 Summary of this function goes here
 %   Detailed explanation goes here
 %% Load Data experiment 1
-des =1;
+des = 1;
 
 %% Load Data System Pose
 h = h(:, des:end);
 
 %% Load Data Velocities
 hp = hp(:, des:end);
+
+%% Get Rotational Matrices
+[R_1] = get_Rot_m(h);
+[R_2] = get_Rot_c(h);
+
+%% get Vector Rotational Matrix
+R_v = vectorize_R(R_1);
 
 %% Angular Values
 p = hp(4, :);
@@ -32,12 +39,10 @@ ul_d = u_ref(1,:);
 alpha_d = u_ref(2,:);
 
 %% generalized Data system
-X = [euler(3,:);...
-    omega(3,:);...
+X = [R_v(:, :);...
+    omega(:,:);...
     h(11, :);...
-    hp(1, :);...
-    h(1, :);...
-    h(2, :)];
+    hp(1:3, :);];
 
 %% Control Signal
 U_ref = [ul_d;...

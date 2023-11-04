@@ -149,14 +149,24 @@ set(gcf, 'PaperSize', [4 2]);
 set(gcf, 'PaperPositionMode', 'manual');
 set(gcf, 'PaperPosition', [0 0 10 4]);
 
-subplot(1,1,1)
-plot(salida_real(15,1:length(X2)-1),'-','Color',[226,76,44]/255,'linewidth',1); hold on
+subplot(2,1,1)
+plot(salida_real(17,1:length(X2)-1),'-','Color',[226,76,44]/255,'linewidth',1); hold on
 grid on;
-plot(salida_es(15,1:length(X2)-1),'--','Color',[100,76,10]/255,'linewidth',1); hold on
-legend({'${v_y}$','$\hat{v_y}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
+plot(salida_es(17,1:length(X2)-1),'--','Color',[100,76,10]/255,'linewidth',1); hold on
+legend({'${x}$','$\hat{x}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
 legend('boxoff')
-ylabel('$[m/s]$','Interpreter','latex','FontSize',9);
+ylabel('$[rad/s]$','Interpreter','latex','FontSize',9);
 set(gcf, 'Color', 'w'); % Sets axes background
+
+
+subplot(2,1,2)
+plot(salida_real(18,1:length(X2)-1),'-','Color',[226,76,44]/255,'linewidth',1); hold on
+grid on;
+plot(salida_es(18,1:length(X2)-1),'--','Color',[100,76,10]/255,'linewidth',1); hold on
+legend({'${y}$','$\hat{y}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
+legend('boxoff')
+ylabel('$[rad]$','Interpreter','latex','FontSize',9);
+
 
 figure
 set(gcf, 'PaperUnits', 'inches');

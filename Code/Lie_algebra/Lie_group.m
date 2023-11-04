@@ -2,28 +2,34 @@ clc, clear all, close all
 
 x_init = 0;
 y_init = 0;
-angle_init = 0;
+z_init = 0;
+angle_init = pi/2;
+
 %% Inital Conditions
-T_initial = [cos(angle_init), -sin(angle_init), x_init;
-             sin(angle_init), cos(angle_init), y_init;
-             0, 0, 1];
+T_initial = vector_to_lie(angle_init, [x_init; y_init; z_init]);
 %% Sample Time Definition
 dt = 0.1;  
-total_time = 10; 
+total_time = 20; 
 t = (0: dt:total_time);
 
 %% Initial Condition
 T_current = T_initial;
 
 %% Control actions
-v = 1*ones(length(t));  
-omega = 1*sin(1*t);
+vx = 1*ones(length(t));  
+vy = 0*ones(length(t));
+vz = 1*ones(length(t));
+
+r = 2*sin(2*t);
+p = 0*sin(2*t);
+q = 0*sin(2*t);
 
 %% Initial Contidion vector space
 x = x_init;
 y = y_init;
 theta = angle_init;
 h = [x; y; theta];
+
 %% Iterate for each time step
 for i = 1:length(t)
     h(3) = Angulo(h(3));
@@ -32,17 +38,15 @@ for i = 1:length(t)
     pos_theta_e(i) = h(3);
     
     %% Extract Location system
-    T_currec_aux = logm(T_current);
-    pose = vee_map(T_currec_aux);
+    [pose, ang] = lie_to_vector(T_current);
     
-    pos_x(i) = T_current(1, 3);
-    pos_y(i) = T_current(2, 3);
-    angle(i) = pose(3);
+    pos_x(i) = pose(1, 1);
+    pos_y(i) = pose(2, 1);
+    pos_z(i) = pose(3, 1);
+    angle(i) = ang(3);
     
     %% Define Lie algebra element xi for this time step
-    xi = [0, -omega(i), v(i);
-        omega(i), 0, 0;
-        0, 0, 0]*dt;
+    xi = differential([p(i); q(i); r(i)], [vx(i); vy(i); vz(i)])*dt;
     
     %% Exponential map to obtain transformation matrix for small motion
     T_step = expm(xi);
@@ -53,7 +57,7 @@ for i = 1:length(t)
     J = [cos(h(3)), 0;...
         sin(h(3)), 0;...
         0, 1];
-    hp = J*[v(i); omega(i)];
+    hp = J*[vx(i); r(i)];
     
     h = h + hp*dt;
     

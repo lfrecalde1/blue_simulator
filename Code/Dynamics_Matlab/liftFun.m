@@ -24,7 +24,7 @@ for k = 1:length(x)
               0, 0, 1];
  v_i = aux_alpha*rot*v_b;
  %% Complete vector
- xlift(:, k) = [xlift_1; xlift_2; v_i; angular_aux; angular_aux_1];
+ xlift(:, k) = [xlift_1; xlift_2; v_i; angular_aux];
  %xlift(:, k) = [xlift_1; v_i; angular_aux; angular_aux_1;1];
 
 end

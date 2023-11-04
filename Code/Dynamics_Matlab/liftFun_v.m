@@ -26,5 +26,5 @@ v_i = aux_alpha*rot*v_b;
 
 %% Complete Vector
 xlift = [xlift_1; xlift_2; v_i; angular_aux; angular_aux_1];
-
+%xlift = [xlift_1; v_i; angular_aux; angular_aux_1;1];
 end

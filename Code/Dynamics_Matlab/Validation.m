@@ -3,7 +3,7 @@ clc, clear all, close all;
 
 %% Initial Conditions System
 %% The identification works with Data 1 and 2 since we identidied with theses values
-load("Data_System_1.mat");
+load("Data_System_2.mat");
 load("matrices.mat")
 [Data_2_X_k, Data_2_X_1, Data_2_U_1] = get_data_simple(h, hp, T);
 

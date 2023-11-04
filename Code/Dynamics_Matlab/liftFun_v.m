@@ -8,7 +8,7 @@ xlift_1 = x;
 rot = reshape(x(1:9, 1), 3, 3);
 w = x(10:12, 1);
 w_matrix = hat_map(w);
-z = rot*w_matrix;
+z = rot*expm(w_matrix);
 z_vector = vectorize(z);
 xlift_2 = z_vector;
 

@@ -3,7 +3,7 @@ clc, clear all, close all;
 
 %% Initial Conditions System
 %% The identification works with Data 1 and 2 since we identidied with theses values
-load("Data_System_1.mat");
+load("Data_System_3.mat");
 load("matrices.mat")
 [Data_2_X_k, Data_2_X_1, Data_2_U_1] = get_data_simple(h, hp, T);
 
@@ -20,12 +20,16 @@ m = size(Gamma, 1);
 
 C_a = [eye(n_normal,n_normal), zeros(n_normal, n-n_normal)];
 v_estimate(:, 1) = C_a*(X1(:, 1));
+
+%% get Covatiance Matrix
+P = inv(X1(:,1)*X1(:,1)');
+
 for k= 1:length(X1)
     %% Output of the system
     salida_es(:, k) = v_estimate(:, k);
     rot_es(:, :, k) = reshape(v_estimate(1:9, k), 3, 3);
     angles_est(: , k) =  get_angles(rot_es(:, :, k));
-    
+    det(rot_es(:, :, k))
     Gamma_real = (X1(:, k));
     salida_real(:, k) = C_a*Gamma_real;
     rot_real(:, :, k) = reshape(salida_real(1:9, k), 3, 3);
@@ -182,10 +186,12 @@ title('$\textrm{Error estimation}$','Interpreter','latex','FontSize',9);
 
 figure
 imagesc(A_a);
-eig_v = eig(A_a);
+eig_v = eig(A_a)
 figure
 imagesc(B_a);
 
+figure
+imagesc(P);
 
 disp('Error normal estimation')
 norm(error)

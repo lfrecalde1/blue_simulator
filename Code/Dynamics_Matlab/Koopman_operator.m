@@ -8,15 +8,18 @@ load("Data_System_2.mat");
 load("Data_System_1.mat");
 [Data_2_X_k, Data_2_X_1, Data_2_U_1] = get_data_simple(h, hp, T);
 
+load("Data_System_3.mat");
+[Data_3_X_k, Data_3_X_1, Data_3_U_1] = get_data_simple(h, hp, T);
+
 %% Rearrange data in order to develp DMD ext
 %% State K
-X1 = [Data_1_X_1, Data_2_X_1];
+X1 = [Data_1_X_1, Data_2_X_1, Data_3_X_1];
 
 %% State K+1
-X2 = [Data_1_X_k, Data_2_X_k];
+X2 = [Data_1_X_k, Data_2_X_k, Data_3_X_k];
 n_normal = size(X1,1);
 %% Input K
-Gamma = [Data_1_U_1, Data_2_U_1];
+Gamma = [Data_1_U_1, Data_2_U_1, Data_3_U_1];
 
 %% Lifdted space system
 X1 = liftFun(X1);
@@ -28,11 +31,11 @@ X2 = liftFun(X2);
 n = size(X2, 1);
 m = size(Gamma, 1);
 %% Optimization  variables 
-alpha = 1;
-beta = 1;
+alpha = 0.2;
+beta = 0.2;
 % 
 %% Optimization Problem
-[A_a, B_a, P] = funcion_costo_koopman_csadi(X1, X2, Gamma, alpha, beta, n, m, n_normal);
+[A_a, B_a] = funcion_costo_koopman_csadi(X1, X2, Gamma, alpha, beta, n, m, n_normal);
 C_a = [eye(n_normal,n_normal), zeros(n_normal, n-n_normal)];
 
 

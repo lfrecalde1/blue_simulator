@@ -1,4 +1,4 @@
-function [A_final, B_final] = funcion_costo_koopman_csadi(X_1, X_K, U, alpha, beta, n, m, n_normal)
+function [A_final, B_final,P] = funcion_costo_koopman_csadi(X_1, X_K, U, alpha, beta, n, m, n_normal)
 %% Load Casadi to the path of matlab 
 addpath('/home/fer/casadi-linux-matlabR2014b-v3.4.5');
 import casadi.*;

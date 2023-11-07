@@ -3,10 +3,10 @@
 clc, clear all, close all;
 
 %% Load data from the specified file
-load("blue_data_p3.mat");
-size_data = 500;
+load("blue_data_p7.mat");
+size_data = 320;
 %% Odometry of the system
-[h, hp, T] = get_odometry(data_odom_blue', steering_real', vx', vy', vz', wx', wy', wz', vel_control', steering_control', size_data);
+[h, hp, T] = get_odometry(data_odom_blue', steering_real', vel_real', vy', vz', wx', wy', wz', vel_control', steering_control', size_data);
 
 %% Angular Velocities of the sytem
 p = hp(4, :); 
@@ -23,9 +23,6 @@ end
 [R_1] = get_Rot_m(h);
 [R_2] = get_Rot_c(h);
 
-%% Get angles from the rotational matrices
-[angles_1] = get_angles(R_1);
-[angles_2] = get_angles(R_2);
 
 %% Vector Rotational matricz
 R_v = vectorize_R(R_1);
@@ -54,9 +51,8 @@ set(gcf, 'Color', 'w'); % Sets axes background
 
 subplot(3,1,3)
 plot(h(10,:),'-','Color',[26,115,160]/255,'linewidth',1); hold on
-plot(angles_1(3,:),'--','Color',[26,20,20]/255,'linewidth',1); hold on
 grid on;
-legend({'${\psi}$', '${\psi}_e$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
+legend({'${\psi}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
 legend('boxoff')
 ylabel('$[rad]$','Interpreter','latex','FontSize',9);
 
@@ -195,4 +191,4 @@ title('$\textrm{Angular Velocities System}$','Interpreter','latex','FontSize',9)
 ylabel('$[rad]$','Interpreter','latex','FontSize',9);
 
 %% Save Data of the system
-save("Data_System_2.mat","T", "h", "hp")
+save("Data_System_5.mat","T", "h", "hp")

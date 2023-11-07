@@ -37,14 +37,18 @@ for i = 1:length(t)
     pos_y_e(i) = h(2);
     pos_theta_e(i) = h(3);
     
+    
     %% Extract Location system
+    
+    
     [pose, ang] = lie_to_vector(T_current);
     
     pos_x(i) = pose(1, 1);
     pos_y(i) = pose(2, 1);
     pos_z(i) = pose(3, 1);
     angle(i) = ang(3);
-    
+    T_current_aux = T_current(1:2,1:2)
+    Aux_matrix = [cos(angle(i)), -sin(angle(i));sin(angle(i)), cos(angle(i))]
     %% Define Lie algebra element xi for this time step
     xi = differential([p(i); q(i); r(i)], [vx(i); vy(i); vz(i)])*dt;
     

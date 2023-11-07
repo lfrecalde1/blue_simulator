@@ -1,4 +1,4 @@
-function [A_final, B_final,P] = funcion_costo_koopman_csadi(X_1, X_K, U, alpha, beta, n, m, n_normal)
+function [A_final, B_final] = funcion_costo_koopman_csadi(X_1, X_K, U, alpha, beta, n, m, n_normal)
 %% Load Casadi to the path of matlab 
 addpath('/home/fer/casadi-linux-matlabR2014b-v3.4.5');
 import casadi.*;
@@ -25,13 +25,13 @@ for k = 1:length(U)
 
     
     error_koop = Gamma_k  -A*Gamma_1 - B*U(:,k);
-    error_prediction = x_k - C_a*(A*Gamma_1 + B*U(:, k)) ;
+    %error_prediction = x_k - C_a*(A*Gamma_1 + B*U(:, k)) ;
     he_koop = [he_koop; error_koop];
-    he_prediction = [he_prediction; error_prediction];
+    %he_prediction = [he_prediction; error_prediction];
     
 end
 %% Optimization Problem
-obj = beta*norm(he_koop, 2)^2 + alpha*norm(A, 'fro') + alpha*norm(B, 'fro')  + 1*norm(he_prediction, 2)^2;
+obj = beta*norm(he_koop, 'fro')^2 + alpha*norm(A, 'fro') + alpha*norm(B, 'fro') + 0*norm(he_prediction, 2)^2;
 
 %obj = beta*norm(he_koop, 'fro');
 

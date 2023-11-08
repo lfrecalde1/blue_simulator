@@ -23,13 +23,15 @@ v_estimate(:, 1) = C_a*(X1(:, 1));
 
 %% get Covatiance Matrix
 P = inv(X1(:,:)*X1(:,:)');
+[U,S,V] = svd(P);
+condition_number = max(S(1, 1))/min(S(end, end))
 
 for k= 1:length(X1)
     %% Output of the system
     salida_es(:, k) = v_estimate(:, k);
     rot_es(:, :, k) = reshape(v_estimate(1:4, k), 2, 2);
     angles_est(: , k) =  get_angles(rot_es(:, :, k));
-    det(rot_es(:, :, k))
+    det(rot_es(:, :, k));
     Gamma_real = (X1(:, k));
     salida_real(:, k) = C_a*Gamma_real;
     rot_real(:, :, k) = reshape(salida_real(1:4, k), 2, 2);

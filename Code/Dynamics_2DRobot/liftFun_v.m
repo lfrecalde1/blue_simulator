@@ -11,7 +11,7 @@ xlift_1 = x(:, 1);
   
  w = x(5, 1);
  vel = x(7:8, 1);
- differential_system = differential(w, vel)*0.05;
+ differential_system = differential(w, vel);
  z = T*expm(differential_system);
  R_vector = vectorize(z(1:2, 1:2));
  P_vector = z(1:2, 3);
@@ -23,6 +23,6 @@ xlift_1 = x(:, 1);
  angular_aux_1 = (-1/(cos(x(6, 1))^2))*x(7, 1);
  
  %% Complete vector
- xlift(:, 1) = [xlift_1; xlift_2; xlift_3; angular_aux];
+ xlift(:, 1) = [xlift_1; xlift_2; xlift_3; steer_aux; angular_aux; angular_aux_1];
  %xlift(:, k) = [xlift_1; v_i; angular_aux; angular_aux_1;1];
 end

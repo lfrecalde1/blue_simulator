@@ -192,7 +192,8 @@ title('$\textrm{Error estimation}$','Interpreter','latex','FontSize',9);
 
 figure
 imagesc(A_a);
-eig_v = eig(A_a);
+eig_v = eig(A_a)
+det(A_a)
 figure
 imagesc(B_a);
 

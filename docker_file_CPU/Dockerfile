@@ -1,33 +1,34 @@
-ARG BASE_IMAGE=nvidia/cuda:11.8.0-base-ubuntu20.04
-FROM ${BASE_IMAGE} AS downloader
+ARG BASE_IMAGE=cyberbotics/webots:R2023a-ubuntu20.04
+FROM $BASE_IMAGE AS downloader
 
 # Determine Webots version to be used and set default argument
 ARG WEBOTS_VERSION=R2023a
-ARG WEBOTS_PACKAGE_PREFIX=
 
-# Disable dpkg/gdebi interactive dialogs
+RUN apt update && apt install --yes unzip && \
+  wget https://github.com/cyberbotics/webots/releases/download/$WEBOTS_VERSION/assets-$WEBOTS_VERSION.zip && \
+  mkdir assets && cp assets-$WEBOTS_VERSION.zip assets/ && \
+  cd assets && unzip assets-$WEBOTS_VERSION.zip && rm assets-$WEBOTS_VERSION.zip
+
+FROM $BASE_IMAGE
+ARG WEBOTS_VERSION=R2023b
+
+#COPY Webots-R2023b.conf /root/.config/Cyberbotics/Webots-$WEBOTS_VERSION.conf
+#COPY --from=downloader /usr/local/assets /root/.cache/Cyberbotics/Webots/assets/
+
+
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update && apt-get install --yes wget bzip2 && rm -rf /var/lib/apt/lists/ && \
- wget https://github.com/cyberbotics/webots/releases/download/$WEBOTS_VERSION/webots-$WEBOTS_VERSION-x86-64$WEBOTS_PACKAGE_PREFIX.tar.bz2 && \
- tar xjf webots-*.tar.bz2 && rm webots-*.tar.bz2
+RUN apt-get update && apt-get install -y apt-utils curl wget git bash-completion build-essential sudo && rm -rf /var/lib/apt/lists/*
 
-FROM ${BASE_IMAGE}
-
-# Disable dpkg/gdebi interactive dialogs
-ENV DEBIAN_FRONTEND=noninteractive
-
-# Install Webots runtime dependencies
-RUN apt-get update && apt-get install --yes wget xvfb locales && rm -rf /var/lib/apt/lists/ && \
-  wget https://raw.githubusercontent.com/cyberbotics/webots/master/scripts/install/linux_runtime_dependencies.sh && \
-  chmod +x linux_runtime_dependencies.sh && ./linux_runtime_dependencies.sh && rm ./linux_runtime_dependencies.sh && rm -rf /var/lib/apt/lists/
-
-# Install Webots
-WORKDIR /usr/local
-COPY --from=downloader /webots /usr/local/webots/
-ENV QTWEBENGINE_DISABLE_SANDBOX=1
-ENV WEBOTS_HOME /usr/local/webots
-ENV PATH /usr/local/webots:${PATH}
+# Now create the user
+ARG UID=1000
+ARG GID=1000
+RUN addgroup --gid ${GID} docker
+RUN adduser --gecos "ROS User" --disabled-password --uid ${UID} --gid ${GID} docker
+RUN usermod -a -G dialout docker
+RUN mkdir config && echo "ros ALL=(ALL) NOPASSWD: ALL" > config/99_aptget
+RUN cp config/99_aptget /etc/sudoers.d/99_aptget
+RUN chmod 0440 /etc/sudoers.d/99_aptget && chown root:root /etc/sudoers.d/99_aptget
 
 ## ROS NOETIC INSTALL
 # Minimal setup
@@ -45,16 +46,6 @@ RUN rosdep init \
  && rosdep fix-permissions \
  && rosdep update
 
-# Now create the user
-ARG UID=1000
-ARG GID=1000
-RUN addgroup --gid ${GID} webots
-RUN adduser --gecos "ROS User" --disabled-password --uid ${UID} --gid ${GID} webots
-RUN usermod -a -G dialout webots
-RUN mkdir config && echo "ros ALL=(ALL) NOPASSWD: ALL" > config/99_aptget
-RUN cp config/99_aptget /etc/sudoers.d/99_aptget
-RUN chmod 0440 /etc/sudoers.d/99_aptget && chown root:root /etc/sudoers.d/99_aptget
-
 # Change HOME environment variable
 ENV HOME /home/webots
 RUN mkdir -p ${HOME}/webots_ros/src
@@ -67,11 +58,7 @@ RUN apt-get update && \
 # INSTALL DEPENDENS
 RUN apt-get install -y python3-pip
 
-# INSTALL GIT-LFS
-RUN apt-get update && apt-get install -y git-lfs
-
 # CLONE REPOSITORY
-
 RUN cd ${HOME}/webots_ros/src/ \
 	&& git clone https://github.com/lfrecalde1/blue_simulator.git \
 	&& git clone https://github.com/cyberbotics/webots_ros.git \
@@ -99,7 +86,7 @@ RUN sudo chmod +x /sbin/update_bashrc ; sudo chown ros /sbin/update_bashrc ; syn
 RUN apt-get install vim nano -y
  
 # Enable OpenGL capabilities
-ENV NVIDIA_DRIVER_CAPABILITIES graphics,compute,utility
+#ENV NVIDIA_DRIVER_CAPABILITIES graphics,compute,utility
 
 # Set the locales
 RUN locale-gen en_US.UTF-8
@@ -107,5 +94,4 @@ ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 
 # Finally open a bash command to let the user interact
 #CMD ["/bin/bash"]
-#CMD cd ${HOME}/webots_ros/ && /bin/bash -c "source devel/setup.bash; roslaunch blue_simulator simulator_webots.launch"
-CMD cd ${HOME}/webots_ros/ && /bin/bash -c "source devel/setup.bash; roslaunch blue_simulator thermal.launch"
+CMD cd ${HOME}/webots_ros/ && /bin/bash -c "source devel/setup.bash; roslaunch blue_simulator simulator_webots.launch"

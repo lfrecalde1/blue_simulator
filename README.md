@@ -1,4 +1,8 @@
-# Blue Mobile Robot Based on Webots
+# Robotic Systems Simulated in Webots
+
+<p float="left">
+    <img src="Photovoltaic_array.png" width="600"  />
+ </p>
 
 <p float="left">
     <img src="Blue.gif" width="600"  />
@@ -45,11 +49,12 @@ catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3
 source devel/setup.bash
 ```
 
-## Use
-To run the simulator, execute the following command:
+## Use Blue Robot
+To run the simulator using Blue Robot, execute the following command:
 
+## Use Photovoltaic Array Inspection
 ```bash
-roslaunch blue_simulator simulator_webots.launch
+roslaunch blue_simulator  thermal.launch
 ```
 
 ## Docker

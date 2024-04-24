@@ -1,0 +1,314 @@
+#VRML_SIM R2022b utf8
+# license: Apache License 2.0
+# license url: http://www.apache.org/licenses/LICENSE-2.0
+# This is a proto file for Webots for the Cr3Robot
+# Extracted from: /home/fer/blue_catkin_ws/src/TCP-IP-ROS-6AXis/dobot_description/urdf/cr3_robot.urdf
+
+PROTO Cr3Robot [
+  field  SFVec3f     translation     0 0 0
+  field  SFRotation  rotation        0 0 1 0
+  field  SFString    name            "Cr3Robot"  # Is `Robot.name`.
+  field  SFString    controller      "extern"      # Is `Robot.controller`.
+  field  MFString    controllerArgs  []          # Is `Robot.controllerArgs`.
+  field  SFString    customData      ""          # Is `Robot.customData`.
+  field  SFBool      supervisor      FALSE       # Is `Robot.supervisor`.
+  field  SFBool      synchronization TRUE        # Is `Robot.synchronization`.
+  field  SFBool      selfCollision   FALSE       # Is `Robot.selfCollision`.
+  field  MFNode      toolSlot        []          # Extend the robot with new nodes at the end of the arm.
+]
+{
+  Robot {
+    translation IS translation
+    rotation IS rotation
+    controller IS controller
+    controllerArgs IS controllerArgs
+    customData IS customData
+    supervisor IS supervisor
+    synchronization IS synchronization
+    selfCollision IS selfCollision
+    children [
+      Solid {
+        children [
+          Shape {
+            appearance DEF base_link_material PBRAppearance {
+              roughness 1.000000
+              metalness 0
+            }
+            geometry DEF base_link Mesh {
+              url "/home/fer/blue_catkin_ws/src/TCP-IP-ROS-6AXis/dobot_description/meshes/cr3/base_link.STL"
+            }
+          }
+          HingeJoint {
+            jointParameters HingeJointParameters {
+              axis 0.000000 0.000000 1.000000
+              anchor 0.000000 0.000000 0.128300
+            }
+            device [
+              RotationalMotor {
+                name "joint1"
+                minPosition -3.14
+                maxPosition 3.14
+                maxTorque 10000
+              }
+              PositionSensor {
+                name "joint1_sensor"
+              }
+            ]
+            endPoint Solid {
+              translation 0.000000 0.000000 0.128300
+              children [
+                Shape {
+                  appearance DEF Link1_material PBRAppearance {
+                    roughness 1.000000
+                    metalness 0
+                  }
+                  geometry DEF Link1 Mesh {
+                    url "/home/fer/blue_catkin_ws/src/TCP-IP-ROS-6AXis/dobot_description/meshes/cr3/Link1.STL"
+                  }
+                }
+                HingeJoint {
+                  jointParameters HingeJointParameters {
+                    axis -0.000004 -1.000000 0.000000
+                  }
+                  device [
+                    RotationalMotor {
+                      name "joint2"
+                      minPosition -3.14
+                      maxPosition 3.14
+                      maxTorque 10000
+                    }
+                    PositionSensor {
+                      name "joint2_sensor"
+                    }
+                  ]
+                  endPoint Solid {
+                    rotation 0.577350 0.577350 -0.577352 2.094399
+                    children [
+                      Shape {
+                        appearance DEF Link2_material PBRAppearance {
+                          roughness 1.000000
+                          metalness 0
+                        }
+                        geometry DEF Link2 Mesh {
+                          url "/home/fer/blue_catkin_ws/src/TCP-IP-ROS-6AXis/dobot_description/meshes/cr3/Link2.STL"
+                        }
+                      }
+                      HingeJoint {
+                        jointParameters HingeJointParameters {
+                          axis 0.000000 0.000000 1.000000
+                          anchor -0.274000 0.000000 0.000000
+                        }
+                        device [
+                          RotationalMotor {
+                            name "joint3"
+                            minPosition -2.86
+                            maxPosition 2.86
+                            maxTorque 10000
+                          }
+                          PositionSensor {
+                            name "joint3_sensor"
+                          }
+                        ]
+                        endPoint Solid {
+                          translation -0.274000 0.000000 0.000000
+                          children [
+                            Shape {
+                              appearance DEF Link3_material PBRAppearance {
+                                roughness 1.000000
+                                metalness 0
+                              }
+                              geometry DEF Link3 Mesh {
+                                url "/home/fer/blue_catkin_ws/src/TCP-IP-ROS-6AXis/dobot_description/meshes/cr3/Link3.STL"
+                              }
+                            }
+                            HingeJoint {
+                              jointParameters HingeJointParameters {
+                                axis 0.000000 -0.000000 1.000000
+                                anchor -0.230000 0.000000 0.128300
+                              }
+                              device [
+                                RotationalMotor {
+                                  name "joint4"
+                                  minPosition -3.14
+                                  maxPosition 3.14
+                                  maxTorque 10000
+                                }
+                                PositionSensor {
+                                  name "joint4_sensor"
+                                }
+                              ]
+                              endPoint Solid {
+                                translation -0.230000 0.000000 0.128300
+                                rotation 0.000000 0.000000 -1.000000 1.570800
+                                children [
+                                  Shape {
+                                    appearance DEF Link4_material PBRAppearance {
+                                      roughness 1.000000
+                                      metalness 0
+                                    }
+                                    geometry DEF Link4 Mesh {
+                                      url "/home/fer/blue_catkin_ws/src/TCP-IP-ROS-6AXis/dobot_description/meshes/cr3/Link4.STL"
+                                    }
+                                  }
+                                  HingeJoint {
+                                    jointParameters HingeJointParameters {
+                                      axis 0.000000 -1.000000 -0.000004
+                                      anchor 0.000000 -0.116000 0.000000
+                                    }
+                                    device [
+                                      RotationalMotor {
+                                        name "joint5"
+                                        minPosition -3.14
+                                        maxPosition 3.14
+                                        maxTorque 10000
+                                      }
+                                      PositionSensor {
+                                        name "joint5_sensor"
+                                      }
+                                    ]
+                                    endPoint Solid {
+                                      translation 0.000000 -0.116000 0.000000
+                                      rotation 1.000000 0.000000 0.000000 1.570800
+                                      children [
+                                        Shape {
+                                          appearance DEF Link5_material PBRAppearance {
+                                            roughness 1.000000
+                                            metalness 0
+                                          }
+                                          geometry DEF Link5 Mesh {
+                                            url "/home/fer/blue_catkin_ws/src/TCP-IP-ROS-6AXis/dobot_description/meshes/cr3/Link5.STL"
+                                          }
+                                        }
+                                        HingeJoint {
+                                          jointParameters HingeJointParameters {
+                                            axis 0.000000 1.000000 -0.000004
+                                            anchor 0.000000 0.105000 0.000000
+                                          }
+                                          device [
+                                            RotationalMotor {
+                                              name "joint6"
+                                              minPosition -6.28
+                                              maxPosition 6.28
+                                              maxTorque 10000
+                                            }
+                                            PositionSensor {
+                                              name "joint6_sensor"
+                                            }
+                                          ]
+                                          endPoint Solid {
+                                            translation 0.000000 0.105000 0.000000
+                                            rotation -1.000000 0.000000 0.000000 1.570800
+                                            children [
+                                              Shape {
+                                                appearance DEF Link6_material PBRAppearance {
+                                                  roughness 1.000000
+                                                  metalness 0
+                                                }
+                                                geometry DEF Link6 Mesh {
+                                                  url "/home/fer/blue_catkin_ws/src/TCP-IP-ROS-6AXis/dobot_description/meshes/cr3/Link6.STL"
+                                                }
+                                              }
+                                              Group {
+                                                children IS toolSlot
+                                              }
+                                            ]
+                                            name "Link6"
+                                            boundingObject USE Link6
+                                            physics Physics {
+                                              density -1
+                                              mass 0.159409
+                                              centerOfMass [ -0.000001 0.000270 -0.020139 ]
+                                              inertiaMatrix [
+                                                8.294845e-05 8.359283e-05 1.319111e-04
+                                                -1.452094e-09 -1.723409e-11 -1.339110e-07
+                                              ]
+                                            }
+                                          }
+                                        }
+                                      ]
+                                      name "Link5"
+                                      boundingObject USE Link5
+                                      physics Physics {
+                                        density -1
+                                        mass 0.843693
+                                        centerOfMass [ -0.000000 -0.003332 -0.002868 ]
+                                        inertiaMatrix [
+                                          1.008553e-03 7.946147e-04 9.984974e-04
+                                          -7.283253e-09 9.258187e-09 -1.339048e-04
+                                        ]
+                                      }
+                                    }
+                                  }
+                                ]
+                                name "Link4"
+                                boundingObject USE Link4
+                                physics Physics {
+                                  density -1
+                                  mass 0.842273
+                                  centerOfMass [ 0.000000 0.003452 -0.002873 ]
+                                  inertiaMatrix [
+                                    1.003898e-03 7.934736e-04 9.938899e-04
+                                    -3.264987e-09 -3.836527e-09 1.334201e-04
+                                  ]
+                                }
+                              }
+                            }
+                          ]
+                          name "Link3"
+                          boundingObject USE Link3
+                          physics Physics {
+                            density -1
+                            mass 2.214494
+                            centerOfMass [ -0.119823 0.000000 0.009988 ]
+                            inertiaMatrix [
+                              2.361203e-03 3.136353e-03 2.851189e-03
+                              1.818890e-08 1.376295e-04 -1.391669e-08
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                    name "Link2"
+                    boundingObject USE Link2
+                    physics Physics {
+                      density -1
+                      mass 3.400437
+                      centerOfMass [ -0.129235 0.000014 0.133174 ]
+                      inertiaMatrix [
+                        4.505813e-03 6.323298e-03 5.782417e-03
+                        1.580544e-06 8.562870e-05 -4.412017e-07
+                      ]
+                    }
+                  }
+                }
+              ]
+              name "Link1"
+              boundingObject USE Link1
+              physics Physics {
+                density -1
+                mass 1.311006
+                centerOfMass [ -0.000037 -0.003945 0.003640 ]
+                inertiaMatrix [
+                  2.025312e-03 1.980858e-03 1.839669e-03
+                  -1.620400e-06 4.442422e-07 2.568918e-04
+                ]
+              }
+            }
+          }
+        ]
+        name "base_link"
+        boundingObject USE base_link
+        physics Physics {
+          density -1
+          mass 0.653000
+          centerOfMass [ -0.002721 0.000000 0.022038 ]
+          inertiaMatrix [
+            7.513700e-04 8.009400e-04 1.090200e-03
+            -3.036600e-08 1.282500e-06 2.542300e-09
+          ]
+        }
+      }
+    ]
+    name IS name
+  }
+}

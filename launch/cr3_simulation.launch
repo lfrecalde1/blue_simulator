@@ -1,0 +1,18 @@
+<launch>
+ <!-- start Webots -->
+  <arg name="no_gui" default="false," doc="Start Webots with minimal GUI"/>
+  <include file="$(find webots_ros)/launch/webots.launch">
+    <arg name="mode" value="realtime"/>
+    <arg name="no_gui" value="$(arg no_gui)"/>
+    <arg name="world" value="$(find blue_simulator)/worlds/cr3_robot.wbt"/>
+  </include>
+  <arg name="auto_close" default="false" doc="Startup mode"/>
+ <!-- set enviroment variables -->
+  <env name="WEBOTS_HOME" value="/usr/local/webots"/>
+  <env name="LD_LIBRARY_PATH" value="$(env LD_LIBRARY_PATH):$(env WEBOTS_HOME)/lib/controller"/>
+  <env name="PYTHONPATH" value="$(env PYTHONPATH):$(env WEBOTS_HOME)/lib/controller/python"/>
+  <env name="WEBOTS_ROBOT_NAME" value="Cr3Robot"/>
+ <!-- run low level controller and odometry-->
+ <node pkg = "blue_simulator" name = "cr3_webots_simulator" type = "main_cr3_robot.py" output = "screen">
+    </node>
+</launch>

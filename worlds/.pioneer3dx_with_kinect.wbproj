@@ -6,6 +6,7 @@ maximizedDockId: -1
 centralWidgetVisible: 1
 orthographicViewHeight: 1
 textFiles: -1
+globalOptionalRendering: CoordinateSystem::AllBoundingObjects::Normals
 consoles: Console:All:All
 renderingDevicePerspectives: robot:camera_l;1;0.65625;0;0
 renderingDevicePerspectives: robot:range-finder;1;0.65625;0;0

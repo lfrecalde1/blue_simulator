@@ -8,6 +8,10 @@
     <img src="Blue.gif" width="600"  />
  </p>
 
+<p float="left">
+    <img src="cr3_simulation.png" width="600"  />
+ </p>
+
 ## Dependencies
 
 This simulator was developed using Webots [2023a](https://github.com/cyberbotics/webots/releases/download/R2023a/webots_2023a_amd64.deb). Additionally, the ROS version is Noetic, which can be downloaded from [Noetic](https://wiki.ros.org/noetic/Installation/Ubuntu).
@@ -49,12 +53,22 @@ catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3
 source devel/setup.bash
 ```
 
-## Use Blue Robot
+## Blue Robot
 To run the simulator using Blue Robot, execute the following command:
+```bash
+roslaunch blue_simulator simulator_webots.launch
+```
 
-## Use Photovoltaic Array Inspection
+## Photovoltaic Array Inspection
+To run the simulator considering photovoltaic arrays and aerial vehicle, execute the following command:
 ```bash
 roslaunch blue_simulator  thermal.launch
+```
+
+## Robot Manipulator
+To run the simulator considering a 6 DOF manipulator robot  (DOBOT CR3), execute the following command:
+```bash
+roslaunch blue_simulator cr3_simulation.launch
 ```
 
 ## Docker

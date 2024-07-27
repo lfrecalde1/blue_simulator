@@ -14,8 +14,8 @@ WorldInfo {
 }
 Viewpoint {
   fieldOfView 0.660595
-  orientation 0.23783760144278823 0.8130678182983837 -0.5313699259343228 1.0064529448701391
-  position -18.937494628120177 8.871028114639465 31.48856253999627
+  orientation 0.21563069732293602 0.6859337642626513 -0.6949807719760985 0.8495801198128193
+  position -7.148173368908674 5.294335897192259 8.878362461002645
   follow "robot"
   followType "None"
 }
@@ -29,7 +29,7 @@ UnevenTerrain {
   size 80 80 0
 }
 DEF matrice Robot {
-  translation 0 0 5.16
+  translation 0 0.00122 3.94
   rotation 1 0 0 0.000999999916666679
   children [
     Lidar {
@@ -46,7 +46,7 @@ DEF matrice Robot {
         }
         DEF PROP4 Transform {
           translation 9.05 1.4 -8.9
-          rotation 0 -1 0 0.49999999999999234
+          rotation 0 -1 0 -0.4999999999999745
           children [
             DEF PROP Transform {
               translation 0.45 0 -0.08
@@ -63,7 +63,7 @@ DEF matrice Robot {
         }
         DEF PROP3 Transform {
           translation -9 1.4 -8.9
-          rotation 0 1 0 0.49999999999999234
+          rotation 0 1 0 -0.4999999999999745
           children [
             DEF PROP Transform {
               translation 0.45 0 -0.08
@@ -80,7 +80,7 @@ DEF matrice Robot {
         }
         DEF PROP2 Transform {
           translation 9.05 1.4 9.2
-          rotation 0 -1 0 0.49999999999999234
+          rotation 0 -1 0 -0.4999999999999745
           children [
             DEF PROP Transform {
               translation 0.45 0 -0.08
@@ -97,7 +97,7 @@ DEF matrice Robot {
         }
         DEF PROP1 Transform {
           translation -9 1.4 9.2
-          rotation 0 1 0 0.49999999999999234
+          rotation 0 1 0 -0.4999999999999745
           children [
             DEF PROP Transform {
               translation 0.45 0 -0.08
@@ -141,7 +141,7 @@ DEF matrice Robot {
   supervisor TRUE
 }
 DEF Paneles Transform {
-  translation 0 0 1.5
+  translation 0 0 1.47
   rotation 0 1 0 0
   children [
     Solid {

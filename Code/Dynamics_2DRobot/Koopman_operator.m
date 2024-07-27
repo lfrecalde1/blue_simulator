@@ -47,7 +47,7 @@ C_a = [eye(n_normal,n_normal), zeros(n_normal, n-n_normal)];
 
 
 %% Initial Conditions System
-load("Data_System_1.mat");
+load("Data_System_2.mat");
 [Data_2_X_k, Data_2_X_1, Data_2_U_1] = get_data_simple(h, hp, T);
 
 X1 = [Data_2_X_1];

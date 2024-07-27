@@ -1,0 +1,27 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/fer/blue_catkin_ws/devel/include/**",
+        "/opt/ros/noetic/include/**",
+        "/home/fer/blue_catkin_ws/src/blue_simulator/include/**",
+        "/home/fer/blue_catkin_ws/src/TCP-IP-ROS-6AXis/dobot_bringup/include/**",
+        "/home/fer/blue_catkin_ws/src/TCP-IP-ROS-6AXis/dobot_v4_bringup/include/**",
+        "/home/fer/blue_catkin_ws/src/TCP-IP-ROS-6AXis/rosdemo_v3/include/**",
+        "/home/fer/blue_catkin_ws/src/TCP-IP-ROS-6AXis/rosdemo_v4/include/**",
+        "/home/fer/blue_catkin_ws/src/TCP-IP-ROS-6AXis/rviz_dobot_control/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}

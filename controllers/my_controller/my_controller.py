@@ -1,89 +1,99 @@
-#!/usr/bin/env python3     
-import time
-import math
-import numpy as np
-from controller import *
-import rospy
-from sensor_msgs.msg import JointState
-from std_msgs.msg import Header
 
-# Global Variables for ecah joint
-q_1 = 0.5
-q_2 = -0.5
-q_3 = 0.0
-q_4 = 0.0
-q_5 = 0.0
-q_6 = 0.0
+# You may need to import some classes of the controller module
+# For instance From controller import Robot, Motor and more
+from controller import Robot, PositionSensor
+import sys
+import time
+import numpy as np
+from forward_kinematics import forward_kinematics_casadi_link1, forward_kinematics_casadi_link2, forward_kinematics_casadi_link3, forward_kinematics_casadi_link4, forward_kinematics_casadi_link5, forward_kinematics_casadi_link6, forward_kinematics_casadi
+from forward_kinematics import jacobian_casadi
+from ode_acados import dualquat_trans_casadi, dualquat_quat_casadi
+
+# Creating Funtions based on Casadi
+get_trans = dualquat_trans_casadi()
+get_quat = dualquat_quat_casadi()
+forward_kinematics_link1 = forward_kinematics_casadi_link1()
+forward_kinematics_link2 = forward_kinematics_casadi_link2()
+forward_kinematics_link3 = forward_kinematics_casadi_link3()
+forward_kinematics_link4 = forward_kinematics_casadi_link4()
+forward_kinematics_link5 = forward_kinematics_casadi_link5()
+forward_kinematics_link6 = forward_kinematics_casadi_link6()
+forward_kinematics_f = forward_kinematics_casadi()
+jacobian = jacobian_casadi()
 
 def main(robot):
-    # Get time step Simulation
-    time_step = int(robot.getBasicTimeStep()) 
+    # A function that executes the algorithm to obtain sensor data and actuate motors
+    # An object instante that contains all possible information about the robot
+    # Get time step of the current world
+    time_step = int(robot.getBasicTimeStep())
 
-    # Sample Time Defintion
-    sample_time = 0.05
+    # Time definition
+    t_final = 20
 
-    # Message Ros
-    rospy.loginfo_once("CR3 ROBOT SIMULATION")
+    # Sample time
+    t_s = 0.05
 
-    # Cr3 Robot Joints
+    # Definition of the time vector
+    t = np.arange(0, t_final + t_s, t_s, dtype=np.double)
+
+    # Definition of the names of rotational motors
     names_m = ['joint1', 'joint2', 'joint3', 'joint4', 'joint5', 'joint6']
-
-    # Definition of the names of rotational sensors
-    names_s = ['joint1_sensor', 'joint2_sensor', 'joint3_sensor', 'joint4_sensor', 'joint5_sensor', 'joint6_sensor']
 
     # Set and activate motors
     motors = get_motor(robot, names_m)
 
+    # Definition of the names of rotational sensors
+    names_s = ['joint1_sensor', 'joint2_sensor', 'joint3_sensor', 'joint4_sensor', 'joint5_sensor', 'joint6_sensor']
+
     # Set and activate rotational sensors
     sensors = get_sensor_pos(names_s, time_step)
 
-    # Joint Message
-    joint_message = set_joint_message()
+    # Definition of the desired angles for each joint in the manipulator
+    q_c = np.zeros((6, t.shape[0]), dtype = np.double)
+
+    # Definition of the desired angular velocities for each joint in the manipulator
+    qp_c = np.zeros((6, t.shape[0]), dtype = np.double)
+
+    # Definition of the desired angles for each joint in the manipulator
+    q = np.zeros((6, t.shape[0] + 1), dtype = np.double)
 
     # Init System
-    init_system(robot, motors, [0.5, -0.8, -0.0, -0.0, 0.0, 0.0], time_step, sample_time)
-
+    init_system(robot, motors, [0.0, -0.0, -0.0, -0.0, 0.0, 0.0], time_step, t_s)
     # get initial conditions of the system
-    q = get_angular_position(robot, sensors, time_step)
+    q[:, 0] = get_angular_position(robot, sensors, time_step)
 
-    # Simulation Loop
-    while (robot.step(time_step) != -1) and (not rospy.is_shutdown()):
-        tic = time.time()
-        # Compute desired values
-        print("Angular displacement")
-        print(q)
+    # Init dual quaternions of the manipulator robot
+    d = np.zeros((8, t.shape[0] + 1), dtype = np.double)
+    d[:, 0] = np.array(forward_kinematics_f(q[0, 0], q[1, 0], q[2, 0], q[3, 0], q[4, 0], q[5, 0])).reshape((8, ))
 
-        # Compute desired values
-        q_c = [q_1, q_2, q_3, q_4, q_5, q_6]
+    x = np.zeros((7, t.shape[0] + 1), dtype = np.double)
+    
 
-        # actuate the rotational motors of the system
-        set_motor_pos(motors, q_c)
+    # Simulation loop
+    for k in range(0, t.shape[0]):
+         if robot.step(time_step) != -1:
+            tic = time.time()
+            print("Angular displacement")
+            print(q[:, k])
+            print("DualQuaternion Pose")
+            print(d[:, k])
+            # Compute desired values
+            qp_c[:, k] = [1.57, 0.8, 0.5, -0.5, 0.0, 0.5]
 
-        # Get current states of the system
-        q = get_angular_position(robot, sensors, time_step)
+            # actuate the rotational motors of the system
+            set_motor_pos(motors, qp_c[:, k])
 
-        # Time restriction Correct
-        while (time.time() - tic <= sample_time):
-            None
-        toc = time.time() - tic 
-        #rospy.loginfo(message_ros + str(toc))
+            # Get current states of the system
+            q[:, k + 1] = get_angular_position(robot, sensors, time_step)
+            d[:, k + 1] = np.array(forward_kinematics_f(q[0, k+1], q[1, k+1], q[2, k+1], q[3, k+1], q[4, k+1], q[5, k+1])).reshape((8, ))
+            # Sample time saturation
+            while (time.time() - tic <= t_s):
+                None
+            toc = time.time() - tic 
+            print("Sample Time")
+            print(toc)
+    set_motor_vel(motors, [0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
     return None
-
-def set_joint_message():
-     # Create a new JointState message
-    joint_state = JointState()
-    joint_state.header = Header()
-    return joint_state
-
-def send_joint_message(message, pub, states, names):
-    message.header.stamp = rospy.Time.now()
-    message.name = ['joint1', 'joint2']
-    message.position = [1.0, 1.5]
-    message.velocity = [0.0, 0.0]
-    message.effort = []
-
-    # Publish the message
-    pub.publish(message)
 
 def get_motor(robot, name):
     # Motor Configuration
@@ -143,14 +153,13 @@ def get_angular_position(robot, sensors, time_step):
     # sensors                                                               - A list with sensor objects            
     # OUTPUT                                                                
     # q                                                                     - A vector array with the respective information        
-    q = np.zeros((len(sensors), ), dtype=np.double)
+    q = np.zeros((6, ), dtype=np.double)
     size = len(sensors)
     if robot.step(time_step) != -1:
         for k in range(0, size):
             data = sensors[k].getValue()
             q[k] = data
     return q
-
 def init_system(robot, motors, q_c, time_step, t_s):
     # Function that moves the robot to an initial configuration
     # INPUT 
@@ -172,21 +181,13 @@ def init_system(robot, motors, q_c, time_step, t_s):
             toc = time.time() - tic 
     return None
 
+
 if __name__ == '__main__':
     try:
-        # Node Initialization
-        rospy.init_node("cr3_robot_simulation",disable_signals=True, anonymous=True)
-
-        # Conection Webots External
-        robot_a = Supervisor()
-
-        # Publisher robot joint states
-        joint_states_publisher = rospy.Publisher('/cr3_robot/joint_states', JointState, queue_size=10)
-
-        # Simulation 
-        main(robot_a, joint_states_publisher)
-
-    except(rospy.ROSInterruptException, KeyboardInterrupt):
+        robot = Robot()
+        main(robot)
+        pass
+    except(KeyboardInterrupt):
         print("Error System")
         pass
     else:
